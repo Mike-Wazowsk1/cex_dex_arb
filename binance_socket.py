@@ -86,7 +86,7 @@ async def main():
     symbols = [x for x in set(symbols)]
     batch_size = ceil(1000)
     bm_count = ceil(len(symbols)/batch_size)
-    print(f"batch_size: {batch_size} bm_count: {bm_count} ")
+    print(f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
     # bm_count = 1
     ps = []
     for i in range(bm_count):
