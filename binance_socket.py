@@ -37,7 +37,7 @@ def printer(msg,path):
 async def writer(bm,symbol,loop):
         print(symbol)
         bm.start_depth_socket(callback = printer, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
 
         # async with ts as tscm:
