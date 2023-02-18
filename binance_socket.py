@@ -57,8 +57,11 @@ async def writer(bm,symbol,loop):
 def reciver(client,current_batch,global_dict):
     twm = ThreadedWebsocketManager()
     twm.start()
+    ss = []
     for symbol in current_batch:
         twm.start_depth_socket(callback = printer, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
+        ss.append(symbol)
+    print(f"Len: {len(ss)} {ss[:3]}")
         # time.sleep(3)
     twm.join()
         
