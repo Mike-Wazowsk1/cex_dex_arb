@@ -10,6 +10,7 @@ import time
 from binance.client import Client
 import configparser
 from binance.streams import ThreadedWebsocketManager
+import requests
 
 # Loading keys from config file
 
@@ -74,7 +75,18 @@ def reciver(client,current_batch,global_dict):
 #     elif type == 'thread':
 #         asyncio.ensure_future(writer(client,current_batch,loop))
 
-
+async def get_snapshot(symbol):
+    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
+    r = requests.get(base_url).json()
+    timestamp = r['lastUpdateId']
+    asks = r['asks']
+    bids = r['bids']
+    data = [symbol,timestamp,asks,bids]
+    # print(data)
+    with open(f"binance_data/{symbol}.pkl", 'wb') as f:
+        pkl.dump(data,f)
+    f.close()
+        
 
 
 async def main():
@@ -88,6 +100,9 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
     # bm_count = 1
+    for symbol in symbols:
+        await get_snapshot(symbol)
+
     ps = []
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
