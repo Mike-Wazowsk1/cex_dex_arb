@@ -90,7 +90,7 @@ async def main():
     # bm_count = 1
     ps = []
     for i in range(bm_count):
-        current_batch = symbols[0*batch_size:batch_size*i+batch_size]
+        current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # print(current_batch)
         print(current_batch[:3])
         p = mp.Process(target = reciver, args=[client,current_batch,0])
