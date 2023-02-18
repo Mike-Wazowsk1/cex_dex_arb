@@ -83,7 +83,7 @@ async def get_snapshot(symbol):
     bids = r['bids']
     data = [symbol,timestamp,asks,bids]
     # print(data)
-    with open(f"binance_data/{symbol}.pkl", 'wb') as f:
+    with open(f"binance_data/{symbol.lower()}.pkl", 'wb') as f:
         pkl.dump(data,f)
     f.close()
         
