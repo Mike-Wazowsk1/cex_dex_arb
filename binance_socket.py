@@ -37,7 +37,7 @@ def printer(msg,path):
 async def writer(bm,symbol,loop):
         print(symbol)
         bm.start_depth_socket(callback = printer, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-        # time.sleep(0.1)
+        time.sleep(0.1)
 
 
         # async with ts as tscm:
@@ -81,7 +81,7 @@ async def main():
     info = await client.get_exchange_info()
     symbols = [x['symbol'] for x in info['symbols']]
     symbols = [x for x in set(symbols)]
-    batch_size = ceil(1000)
+    batch_size = ceil(100)
     bm_count = ceil(len(symbols)/batch_size)
     print(f"batch_size: {batch_size} bm_count: {bm_count} ")
     # bm_count = 1
