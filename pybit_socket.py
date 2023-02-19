@@ -14,7 +14,6 @@ def handle_orderbook(message):
     bids = data['b'][:20]
     asks = data['a'][:20]
     data = [symbol,timestamp,asks,bids]
-    print(symbol)
     with open(f"bybit_data/{symbol.lower()}.pkl", 'wb') as f:
         pkl.dump(data,f)
     f.close()
