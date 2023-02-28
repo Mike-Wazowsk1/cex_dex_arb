@@ -4,6 +4,7 @@ import time
 import requests
 import json
 import pickle as pkl
+import numpy as np
 ws = spot.WebSocket(
     test=True,
 )
@@ -11,12 +12,33 @@ def handle_orderbook(message):
     data = message['data'][0]
     symbol = data['s']
     timestamp = data['t']
-    bids = data['b'][:20]
-    asks = data['a'][:20]
-    data = [symbol,timestamp,asks,bids]
-    with open(f"bybit_data/{symbol.lower()}.pkl", 'wb') as f:
-        pkl.dump(data,f)
+    bids = data['b'][:15]
+    asks = data['a'][:15]
+
+    asks_price = np.array([float(x[0]) for x in asks[:15]])
+    asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+    numerator = (asks_price * asks_quantity).sum()
+    denumerator = (asks_quantity).sum()
+    asks_avg_price = numerator/denumerator
+
+    bids_price = np.array([float(x[0]) for x in bids[:15]])
+    bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+    numerator = (bids_price * bids_quantity).sum()
+    denumerator = (bids_quantity).sum()
+
+    bids_avg_price = numerator/denumerator
+
+    with open(f"bybit_data/{symbol}_bids.pkl", 'wb') as f:
+        pkl.dump(bids_avg_price, f)
     f.close()
+
+    with open(f"bybit_data/{symbol}_asks.pkl", 'wb') as f:
+        pkl.dump(asks_avg_price, f)
+    f.close()
+    # data = [symbol,timestamp,asks,bids]
+    # with open(f"bybit_data/{symbol.lower()}.pkl", 'wb') as f:
+    #     pkl.dump(data,f)
+    # f.close()
 
 
 
