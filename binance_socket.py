@@ -12,12 +12,12 @@ import configparser
 from binance.streams import ThreadedWebsocketManager
 import requests
 import numpy as np
-
+from database.db import DataBase
 # Loading keys from config file
 
 # This is not REQUIRED
 # client = Client(actual_api_key, actual_secret_key, tld="com")
-
+db = DataBase()
 
 def printer(msg, path):
     """
@@ -33,23 +33,34 @@ def printer(msg, path):
     asks_price = np.array([float(x[0]) for x in asks[:15]])
     asks_quantity = np.array([float(x[1]) for x in asks[:15]])
     numerator = (asks_price * asks_quantity).sum()
-    denumerator = (asks_quantity).sum()
-    asks_avg_price = numerator/denumerator
-
+    asks_amount = (asks_quantity).sum()
+    asks_avg_price = numerator/asks_amount
+    if asks_amount == 0:
+        asks_avg_price = 0
+        return 0
+    else:
+        asks_avg_price = numerator/asks_amount
     bids_price = np.array([float(x[0]) for x in bids[:15]])
     bids_quantity = np.array([float(x[1]) for x in bids[:15]])
     numerator = (bids_price * bids_quantity).sum()
-    denumerator = (bids_quantity).sum()
+    bids_amount = (bids_quantity).sum()
+    if bids_amount == 0:
+        bids_avg_price = 0
+        return 0
+    else:
+        bids_avg_price = numerator/bids_amount
 
-    bids_avg_price = numerator/denumerator
+    bids_avg_price = numerator/ bids_amount
 
-    with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
-        pkl.dump(bids_avg_price, f)
-    f.close()
+    db.update_db(db_name="binance",symbol=symbol,asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
 
-    with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
-        pkl.dump(asks_avg_price, f)
-    f.close()
+    # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
+    #     pkl.dump(bids_avg_price, f)
+    # f.close()
+
+    # with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
+    #     pkl.dump(asks_avg_price, f)
+    # f.close()
 
 
 async def writer(bm, symbol, loop):
@@ -57,18 +68,6 @@ async def writer(bm, symbol, loop):
     bm.start_depth_socket(callback=printer, symbol=symbol,
                           depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
     time.sleep(0.1)
-
-    # async with ts as tscm:
-    #     while True:
-    #         res = await tscm.recv()
-    #         timestamp = res['lastUpdateId']
-    #         asks = res['asks']
-    #         bids = res['bids']
-    #         data = [symbol,timestamp,asks,bids]
-    #         with open(f"binance_data/{symbol}.pkl", 'wb') as f:
-    #             pkl.dump(data,f)
-    #         f.close()
-    #         await asyncio.sleep(0.1)
 
 
 def reciver(client, current_batch, global_dict):
@@ -92,30 +91,48 @@ def reciver(client, current_batch, global_dict):
 
 async def get_snapshot(symbol):
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
-    r = requests.get(base_url).json()
-    timestamp = r['lastUpdateId']
-    asks = r['asks']
-    bids = r['bids']
+    msg = requests.get(base_url).json()
+
+    timestamp = msg['lastUpdateId']
+    asks = msg['asks']
+    bids = msg['bids']
+
     asks_price = np.array([float(x[0]) for x in asks[:15]])
     asks_quantity = np.array([float(x[1]) for x in asks[:15]])
     numerator = (asks_price * asks_quantity).sum()
-    denumerator = (asks_quantity).sum()
-    asks_avg_price = numerator/denumerator
+    asks_amount = (asks_quantity).sum()
+
+    if asks_amount == 0:
+        asks_avg_price = 0
+        return 0
+    else:
+        asks_avg_price = numerator/asks_amount
+    
 
     bids_price = np.array([float(x[0]) for x in bids[:15]])
     bids_quantity = np.array([float(x[1]) for x in bids[:15]])
     numerator = (bids_price * bids_quantity).sum()
-    denumerator = (bids_quantity).sum()
+    bids_amount = (bids_quantity).sum()
+    
 
-    bids_avg_price = numerator/denumerator
+    
+    if bids_amount == 0:
+        bids_avg_price = 0
+        return 0
+    else:
+        bids_avg_price = numerator/bids_amount
 
-    with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
-        pkl.dump(bids_avg_price, f)
-    f.close()
+    print("binance",symbol,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
+    db.init_snapshot(db_name="binance",symbol=symbol,asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
 
-    with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
-        pkl.dump(asks_avg_price, f)
-    f.close()
+
+    # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
+    #     pkl.dump(bids_avg_price, f)
+    # f.close()
+
+    # with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
+    #     pkl.dump(asks_avg_price, f)
+    # f.close()
 
 
 
