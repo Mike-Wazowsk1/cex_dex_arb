@@ -5,6 +5,13 @@ import multiprocessing as mp
 import numpy as np
 import pickle as pkl
 
+from database.db import DataBase
+# Loading keys from config file
+
+# This is not REQUIRED
+# client = Client(actual_api_key, actual_secret_key, tld="com")
+db = DataBase()
+
 LIMITS = 450
 DEPTH = 15
 INTERVAL = 0
@@ -15,34 +22,45 @@ configuration = gate_api.Configuration(
 def reciver(pairs):
     for pair in pairs:
         api_response = api_instance.list_order_book(pair, interval=INTERVAL, limit=DEPTH, with_id=WITH_ID)
-        asks_avg_price,bids_avg_price = get_avg_price(api_response)
-        with open(f"gate_data/{pair.replace('_','')}_bids.pkl", 'wb') as f:
-            pkl.dump(bids_avg_price, f)
-        f.close()
+        bids = api_response.bids
+        asks = api_response.asks
+        timestamp = api_response.current
+        asks_price = np.array([float(x[0]) for x in asks[:15]])
+        asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+        numerator = (asks_price * asks_quantity).sum()
+        asks_amount = (asks_quantity).sum()
+        if asks_amount == 0:
+            asks_avg_price = 0
+            return 0
+        else:
+            asks_avg_price = numerator/asks_amount
+        bids_price = np.array([float(x[0]) for x in bids[:15]])
+        bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+        numerator = (bids_price * bids_quantity).sum()
+        bids_amount = (bids_quantity).sum()
+        if bids_amount == 0:
+            bids_avg_price = 0
+            return 0
+        else:
+            bids_avg_price = numerator/bids_amount
+        
+        db.update_db(db_name="gate",symbol=pair.replace("_",""),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
 
-        with open(f"gate_data/{pair.replace('_','')}_asks.pkl", 'wb') as f:
-            pkl.dump(asks_avg_price, f)
-        f.close()
+
+
+        # with open(f"gate_data/{pair.replace('_','')}_bids.pkl", 'wb') as f:
+        #     pkl.dump(bids_avg_price, f)
+        # f.close()
+
+        # with open(f"gate_data/{pair.replace('_','')}_asks.pkl", 'wb') as f:
+        #     pkl.dump(asks_avg_price, f)
+        # f.close()
         
 
 
-def get_avg_price(api_response):
-    bids = api_response.bids
-    asks = api_response.asks
-    timstamp = api_response.current
-    asks_price = np.array([float(x[0]) for x in asks[:15]])
-    asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-    numerator = (asks_price * asks_quantity).sum()
-    denumerator = (asks_quantity).sum()
-    asks_avg_price = numerator / denumerator
+# def get_avg_price(api_response):
 
-    bids_price = np.array([float(x[0]) for x in bids[:15]])
-    bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-    numerator = (bids_price * bids_quantity).sum()
-    denumerator = (bids_quantity).sum()
-
-    bids_avg_price = numerator / denumerator
-    return asks_avg_price, bids_avg_price
+#     return asks_avg_price, bids_avg_price
 
 api_client = gate_api.ApiClient(configuration)
 api_instance = gate_api.SpotApi(api_client)
