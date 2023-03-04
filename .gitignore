@@ -2,4 +2,7 @@
 /bybit_data
 /gate_data
 /__pycache__
-
+/build
+/config.egg-info
+/database.egg-info
+/dist

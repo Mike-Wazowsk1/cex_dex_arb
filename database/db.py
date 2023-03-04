@@ -2,9 +2,9 @@ import code
 import psycopg2
 from psycopg2.extras import DictCursor
 import datetime
-from config import DB
+from config import config
 from decimal import Decimal
-
+DB = config.DB
 
 class DataBase:
     def __init__(self):
@@ -49,7 +49,21 @@ class DataBase:
     def get_from_db(self, db_name, symbol):
         try:
             self.cursor.execute(
-                f"SELECT price,amount,timestamp from {db_name} WHERE symbol = {symbol}")
+                f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} WHERE symbol = '{symbol}'")
+            data = self.cursor.fetchall()
+            return data
+        except psycopg2.InterfaceError as exc:
+            self.conn = psycopg2.connect(host=DB.host,
+            database=DB.dbname,
+            user=DB.user,
+            password=DB.password)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+
+    def get_arb_info(self,db_name):
+        try:
+            self.cursor.execute(
+                f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name}")
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:

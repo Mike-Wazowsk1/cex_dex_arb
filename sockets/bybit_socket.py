@@ -6,11 +6,8 @@ import json
 import pickle as pkl
 import numpy as np
 
-from database.db import DataBase
-# Loading keys from config file
 
-# This is not REQUIRED
-# client = Client(actual_api_key, actual_secret_key, tld="com")
+from database.db import DataBase
 db = DataBase()
 
 
@@ -44,7 +41,9 @@ def handle_orderbook(message):
     else:
         bids_avg_price = numerator/bids_amount
 
-    db.update_db(db_name="bybit",symbol=symbol,asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+    db.update_db(db_name="bybit",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+    print(symbol)
+    
 
 
     # with open(f"bybit_data/{symbol}_bids.pkl", 'wb') as f:
