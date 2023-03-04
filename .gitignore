@@ -6,3 +6,4 @@
 /config.egg-info
 /database.egg-info
 /dist
+/database/__pycache__/
