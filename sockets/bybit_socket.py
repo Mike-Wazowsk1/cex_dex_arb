@@ -67,7 +67,6 @@ symbols = [x['symbol'] for x in symbols]
 for symbol in symbols:
     db.init_snapshot(db_name="bybit",symbol=symbol.lower(),asks_price=0,bids_price=0,asks_amount=0,bids_amount=0,timestamp=int(0))
 print(f"LEN: {len(symbols)}")
-time.sleep(20)
 
 ws_spot.depth_v1_stream(handle_orderbook, symbols)
 # ws_spot.depth_v1_stream(handle_orderbook, "MATICUSDT")
