@@ -25,8 +25,11 @@ by_d = np.array(db.get_symbols_data('bybit',list(set(binance_info[:,0])&set(bybi
 print(len(bin_d),len(by_d))
 minimum_amount_binance_bybit = np.minimum(bin_d[:,4],by_d[:,3])
 arb_binance_bybit = bin_d[:,2] * minimum_amount_binance_bybit - by_d[:,1] * minimum_amount_binance_bybit
+arb_bybit_binance = by_d[:,2] * minimum_amount_binance_bybit - bin_d[:,1] * minimum_amount_binance_bybit 
 for i in range(len(arb_binance_bybit)):
-    print(f"{bin_d[:,0][i]} - {by_d[:,0][i]} - {bin_d[:,2][i]} - {by_d[:,1][i]}: {arb_binance_bybit[i]}")
+    print(f"Binance-Bybit: {bin_d[:,0][i]} - {by_d[:,0][i]} - {bin_d[:,2][i]} - {by_d[:,1][i]}: {arb_binance_bybit[i]}")
+    print(f"Bybit-Binance: {bin_d[:,0][i]} - {by_d[:,0][i]} - {by_d[:,2][i]} - {bin_d[:,1][i]}: {arb_bybit_binance[i]}")
+
 # amount_1 = np.min(bin_d[:,3],by_d[:,4][:15])
 # amount_2 = np.min(bin_d[:,4],by_d[:,3][:15])
 # print(amount_1,amount_2)
