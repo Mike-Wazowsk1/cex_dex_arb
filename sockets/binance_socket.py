@@ -51,7 +51,7 @@ def printer(msg, path):
         bids_avg_price = numerator/bids_amount
 
 
-    db.update_db(db_name="binance",symbol=symbol,asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+    db.update_db(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
 
     # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
     #     pkl.dump(bids_avg_price, f)
@@ -122,7 +122,7 @@ async def get_snapshot(symbol):
         bids_avg_price = numerator/bids_amount
 
     print("binance",symbol,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
-    db.init_snapshot(db_name="binance",symbol=symbol,asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+    db.init_snapshot(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
 
 
     # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:

@@ -63,7 +63,22 @@ class DataBase:
     def get_arb_info(self,db_name):
         try:
             self.cursor.execute(
-                f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name}")
+                f"SELECT symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name}")
+            data = self.cursor.fetchall()
+            return data
+        except psycopg2.InterfaceError as exc:
+            self.conn = psycopg2.connect(host=DB.host,
+            database=DB.dbname,
+            user=DB.user,
+            password=DB.password)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+
+
+    def get_symbols_data(self,db_name,symbols):
+        try:
+            self.cursor.execute(
+                f"""SELECT symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} WHERE symbol in ({str(symbols)[1:-1]}) ORDER BY symbol""")
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:
