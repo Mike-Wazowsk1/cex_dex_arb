@@ -20,6 +20,7 @@ import logging
 from telegram.constants import ParseMode
 import requests
 import datetime
+from cex_dex_arb.database.db import DataBase
 from keyboards import Keyboard
 from uuid import uuid4
 from arb import ArbitrageManager
@@ -32,6 +33,7 @@ KEYBOARD = Keyboard()
 MIN_USDT = 10
 MIN_AMOUNT = 0
 arb = ArbitrageManager()
+db = DataBase()
 
 async def ave_me(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
 
@@ -57,9 +59,19 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     if 'spread' in query.data:
+
         data = query.data.split("_")[1:]
-        print(data)
-    
+        ex1,ex2,symbol,value = data
+        asks_price1,bids_price1, asks_amount1,bids_amount1,timestamp1 = db.get_from_db(ex1,symbol)[0]
+        asks_price2,bids_price2, asks_amount2,bids_amount2,timestamp2 = db.get_from_db(ex2,symbol)[0]
+        text = f"""
+{symbol}
+
+|{ex1}| {asks_price1} (15)
+|{ex2}| {bids_price2} (15)
+
+Spread: {round(asks_price1*value -bids_price2*value)}"""
+        query.edit_message_text(text=text)
 
 
 async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
@@ -69,7 +81,7 @@ async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
         symbol,ex1,ex2,bid,ask ,value = op
         if ex1 != 'gate' and ex2 !='gate':
             print(symbol,ex1,ex2,bid,ask ,value )
-            buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'spread_{ex1}_{ex2}_{symbol}')])
+            buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'spread_{ex1}_{ex2}_{symbol}_{value}')])
     rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов",reply_markup=rep)
 
