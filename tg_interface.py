@@ -57,7 +57,7 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     if 'spread' in query.data:
-        data = query.split("_")[:1]
+        data = query.data.split("_")[:1]
         print(data)
     
 
