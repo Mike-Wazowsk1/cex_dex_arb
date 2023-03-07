@@ -61,7 +61,9 @@ class ArbitrageManager:
             ex1,ex2 = pair
             symbols,profit = self.get_profit(ex1,ex2)
             if len(profit[profit>0]) > 0:
-                print(f"BUY: {ex1} SELL: {ex2} PAIR: {symbols[profit>0]} PROFIT: {profit[profit>0]}")
+                profitable = profit[profit>0]
+                for i in range(profitable):
+                    print(f"BUY: {ex1} SELL: {ex2} PAIR: {symbols[i]} PROFIT: {profit[i]}")
 
             
             
