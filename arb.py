@@ -69,18 +69,4 @@ class ArbitrageManager:
             
 
 arb = ArbitrageManager()
-print(arb.make_exchange_pairs())
-print(arb.get_profit("binance", 'bybit'))
 arb.main()
-# binance_info = np.array(self.db.get_arb_info(db_name='binance'))
-# bybit_info = np.array(self.db.get_arb_info(db_name='bybit'))
-
-
-# bin_d = np.array(db.get_symbols_data('binance',list(set(binance_info[:,0])&set(bybit_info[:,0]))))
-# by_d = np.array(db.get_symbols_data('bybit',list(set(binance_info[:,0])&set(bybit_info[:,0]))))
-# minimum_amount_binance_bybit = np.minimum(bin_d[:,4],by_d[:,3])
-# arb_binance_bybit = bin_d[:,2] * minimum_amount_binance_bybit - by_d[:,1] * minimum_amount_binance_bybit
-# arb_bybit_binance = by_d[:,2] * minimum_amount_binance_bybit - bin_d[:,1] * minimum_amount_binance_bybit
-# for i in range(len(arb_binance_bybit)):
-#     print(f"Bybit-Binance: {bin_d[:,0][i]} - {round(by_d[:,2][i],6)} - {round(bin_d[:,1][i],6)}: {arb_binance_bybit[i]} {minimum_amount_binance_bybit[i]}")
-#     print(f"Binance-Bybit: {bin_d[:,0][i]} - {round(bin_d[:,2][i],6)} - {round(by_d[:,1][i],6)}: {arb_bybit_binance[i]} {minimum_amount_binance_bybit[i]}")
