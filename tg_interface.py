@@ -33,17 +33,17 @@ MIN_USDT = 10
 MIN_AMOUNT = 0
 arb = ArbitrageManager()
 
-async def ave_me(update: Update, context) -> None:
+async def ave_me(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
 
     await update.message.reply_text('Гений с большим членом: @god_cant_see_me')
 
 
 
-async def start(update: Update, context) -> None:
+async def start(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
 
     await update.message.reply_text('CexDexArb Bot',reply_markup=KEYBOARD.main_keyboard)
 
-async def monitoring(update: Update, context):
+async def monitoring(update: Update, context:ContextTypes.DEFAULT_TYPE):
     text = f"""
 Установлено значение: {MIN_USDT}$
 Если хотите изменить его,введите желаемую прибыль со сделки (в USDT).
@@ -53,18 +53,27 @@ async def monitoring(update: Update, context):
     await update.message.reply_text(text,reply_markup=KEYBOARD.main_keyboard)
 
 
-async def spread_list(update: Update, context):
+async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if 'spread' in query.data:
+        data = query.split("_")[:1]
+        print(data)
+    
+
+
+async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
     opps = arb.main()
     buttons  = []
     for i,op in enumerate(opps):
         symbol,ex1,ex2,bid,ask ,value = op
         if ex1 != 'gate' and ex2 !='gate':
             print(symbol,ex1,ex2,bid,ask ,value )
-            buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'fsd_{ex1}')])
+            buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'spread_{ex1}_{ex2}_{symbol}')])
     rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов",reply_markup=rep)
 
-async def volume_min(update: Update, context):
+async def volume_min(update: Update, context:ContextTypes.DEFAULT_TYPE):
     text = f"""
 Установлен минимальный обьем: {MIN_AMOUNT}$
 Если хотите изменить значение,введите желаемый объем (в USDT).
@@ -83,6 +92,7 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.Regex("Мониторинг"), monitoring))
     application.add_handler(MessageHandler(filters.Regex("Объем (min)"), volume_min))
     application.add_handler(MessageHandler(filters.Regex("Список спредов"), spread_list))
+    application.add_handler(CallbackQueryHandler(callback_handler))
 
 
 
