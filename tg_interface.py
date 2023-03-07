@@ -20,7 +20,7 @@ import logging
 from telegram.constants import ParseMode
 import requests
 import datetime
-from cex_dex_arb.database.db import DataBase
+from database.db import DataBase
 from keyboards import Keyboard
 from uuid import uuid4
 from arb import ArbitrageManager
