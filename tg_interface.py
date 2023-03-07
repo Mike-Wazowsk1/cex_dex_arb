@@ -82,7 +82,7 @@ def make_link_to_ex(ex, symbol):
             if get_s == symbol or symbol in get_s:
                 return r.url
             
-    if ex == "bybit":
+    if ex == "byb1it":
         base_link = "https://www.bybit.com/en-US/trade/spot/"
         get_s = None
         for i in range(len(symbol)):
