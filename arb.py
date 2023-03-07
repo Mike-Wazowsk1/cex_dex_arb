@@ -1,4 +1,5 @@
 import numpy as np
+from sympy import symbols
 from database.db import DataBase
 from itertools import permutations
 
@@ -25,12 +26,12 @@ class ArbitrageManager:
     
     def calc_profit(self,bids,asks,bids_amount, asks_amount):
         value = np.minimum(bids_amount,asks_amount)
-        profit = asks * value - bids * value
+        profit = bids * value - asks * value 
         return profit
 
 
 
-    def get_data_by_symbols(self, ex1, ex2):
+    def get_profit(self, ex1, ex2):
         symbols = self.get_common_pairs(ex1,ex2)
         ex1_data = np.array(self.db.get_symbols_data(ex1, symbols))
         ex2_data = np.array(self.db.get_symbols_data(ex2, symbols))
@@ -52,14 +53,23 @@ class ArbitrageManager:
         bids_amount_ex2 = ex2_data[:, 4]
 
         profit = self.calc_profit(bids_price_ex1,asks_price_ex2,bids_amount_ex1,asks_amount_ex2)
-        return profit
+        return np.array(symbols),profit
+    
+    def main(self):
+        exs = self.make_exchange_pairs()
+        for pair in exs:
+            ex1,ex2 = pair
+            symbols,profit = self.get_profit(ex1,ex2)
+            if len(profit[profit>0]) > 0:
+                print(f"BUY: {ex1} SELL: {ex2} PAIR: {symbols[profit>0]} PROFIT: {profit[profit>0]}")
 
-
-
+            
+            
 
 arb = ArbitrageManager()
 print(arb.make_exchange_pairs())
-print(arb.get_data_by_symbols("binance", 'bybit'))
+print(arb.get_profit("binance", 'bybit'))
+arb.main()
 # binance_info = np.array(self.db.get_arb_info(db_name='binance'))
 # bybit_info = np.array(self.db.get_arb_info(db_name='bybit'))
 

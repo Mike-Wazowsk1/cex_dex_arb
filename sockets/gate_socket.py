@@ -4,7 +4,7 @@ from gate_api.exceptions import ApiException, GateApiException
 import multiprocessing as mp
 import numpy as np
 import pickle as pkl
-
+import time
 from database.db import DataBase
 # Loading keys from config file
 
@@ -20,6 +20,7 @@ configuration = gate_api.Configuration(
     host = "https://api.gateio.ws/api/v4"
 )
 def reciver(pairs):
+    print("I'm here")
     for pair in pairs:
         api_response = api_instance.list_order_book(pair, interval=INTERVAL, limit=DEPTH, with_id=WITH_ID)
         bids = api_response.bids
@@ -29,22 +30,19 @@ def reciver(pairs):
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         numerator = (asks_price * asks_quantity).sum()
         asks_amount = (asks_quantity).sum()
-        if asks_amount == 0:
-            asks_avg_price = 0
-            return 0
-        else:
-            asks_avg_price = numerator/asks_amount
+   
+        asks_avg_price = numerator/asks_amount
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
         numerator = (bids_price * bids_quantity).sum()
         bids_amount = (bids_quantity).sum()
-        if bids_amount == 0:
-            bids_avg_price = 0
-            return 0
-        else:
-            bids_avg_price = numerator/bids_amount
-        
-        db.update_db(db_name="gate",symbol=pair.replace("_",""),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+   
+        bids_avg_price = numerator/bids_amount
+        try:
+            db.init_snapshot(db_name="gate",symbol=pair.replace("_","").lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+            print(pair)
+        except:
+            print(f"Can't handle: {pair}")
 
 
 
@@ -69,7 +67,10 @@ api_response = api_instance.list_currency_pairs()
 pairs = [x.id for x in api_response]
 instances_count = ceil(len(pairs)/LIMITS)
 for i in range(instances_count):
-    mp.Process(target=reciver, args=[pairs[i*LIMITS:LIMITS*i+LIMITS]])
+    print(i)
+    mp.Process(target=reciver, args=[pairs[i*LIMITS:LIMITS*i+LIMITS]]).start()
+    time.sleep(1)
+time.sleep(100)
 # for pair in pairs:
 #     api_response = api_instance.list_order_book(pair, interval=INTERVAL, limit=DEPTH, with_id=WITH_ID)
 #     asks_avg_price,bids_avg_price = get_avg_price(api_response)

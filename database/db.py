@@ -51,7 +51,7 @@ class DataBase:
         
 
     def get_from_db(self, db_name, symbol):
-        q = f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} WHERE symbol = '{symbol}'"
+        q = f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} WHERE symbol = '{symbol}' ORDER BY symbol"
         try:
             self.cursor.execute(q)
             data = self.cursor.fetchall()
@@ -68,7 +68,7 @@ class DataBase:
             return data
 
     def get_arb_info(self,db_name):
-        q = f"SELECT symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name}"
+        q = f"SELECT symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} ORDER BY symbol"
         try:
             self.cursor.execute(q)
             data = self.cursor.fetchall()
