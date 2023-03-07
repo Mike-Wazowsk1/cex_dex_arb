@@ -20,6 +20,7 @@ import logging
 from telegram.constants import ParseMode
 import requests
 import datetime
+
 from database.db import DataBase
 from keyboards import Keyboard
 from uuid import uuid4
@@ -72,7 +73,7 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
 |{ex2}| {round(bids_price2,6)} (15)
 
 Spread: {round(asks_price1*value -bids_price2*value)}"""
-        await query.edit_message_text(text=text, parse_mode="HTML")
+        await query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
 
 
 async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
