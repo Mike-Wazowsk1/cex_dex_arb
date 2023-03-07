@@ -91,6 +91,7 @@ def make_link_to_ex(ex, symbol):
             r = requests.get(base_link+f"{base.upper()}/{asset.upper()}")
             get_s = r.url.split("/")[-2:].replace("/", "").lower()
             if get_s == symbol or symbol in get_s:
+                return r.url
     return "https://www.google.com/"
 
 
