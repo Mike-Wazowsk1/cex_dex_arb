@@ -69,7 +69,7 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
         text = f"""
 {symbol}
 
-\|[{ex1}](https)\| {str(round(asks_price1,6)).replace(".",",")} 15
+\|[{ex1}](https://anvilproject.org/guides/content/creating-links)\| {str(round(asks_price1,6)).replace(".",",")} 15
 \|{ex2}\| {str(round(bids_price2,6)).replace(".",',')} 15
 
 Spread: {round(asks_price1*value -bids_price2*value)}"""
