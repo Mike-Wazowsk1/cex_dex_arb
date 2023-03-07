@@ -56,11 +56,12 @@ async def monitoring(update: Update, context):
 async def spread_list(update: Update, context):
     opps = arb.main()
     buttons  = []
-    for op in opps:
+    for i,op in enumerate(opps):
         symbol,ex1,ex2,bid,ask ,value = op
-
-        buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'fsd_{ex1}')])
-    rep = InlineKeyboardMarkup(buttons)
+        if ex1 != 'gate' and ex2 !='gate':
+            
+            buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'fsd_{ex1}')])
+    rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов",reply_markup=rep)
 
 async def volume_min(update: Update, context):
