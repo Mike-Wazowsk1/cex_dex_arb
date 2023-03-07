@@ -72,7 +72,7 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
 |{ex2}| {bids_price2} (15)
 
 Spread: {round(asks_price1*value -bids_price2*value)}"""
-        query.edit_message_text(text=text)
+        await query.edit_message_text(text=text)
 
 
 async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
