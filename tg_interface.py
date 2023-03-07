@@ -69,11 +69,11 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
         text = f"""
 {symbol}
 
-|<a href=https://www.bybit.com/ru-RU/trade/spot/FIL/USDT>{ex1}</a>| {round(asks_price1,6)} (15)
+|[{ex1}](https://anvilproject.org/guides/content/creating-links)| {round(asks_price1,6)} (15)
 |{ex2}| {round(bids_price2,6)} (15)
 
 Spread: {round(asks_price1*value -bids_price2*value)}"""
-        await query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
+        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
 async def spread_list(update: Update, context:ContextTypes.DEFAULT_TYPE):
