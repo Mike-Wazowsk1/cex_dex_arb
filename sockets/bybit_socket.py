@@ -42,7 +42,6 @@ def handle_orderbook(message):
         bids_avg_price = numerator/bids_amount
 
     db.update_db(db_name="bybit",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
-    print(symbol)
     
 
 
@@ -65,6 +64,7 @@ ws_spot = spot.WebSocket(test=False)
 symbols  = requests.get("https://api.bybit.com/v2/public/tickers").json()['result']
 symbols = [x['symbol'] for x in symbols]
 for symbol in symbols:
+    print(symbol)
     db.init_snapshot(db_name="bybit",symbol=symbol.lower(),asks_price=0,bids_price=0,asks_amount=0,bids_amount=0,timestamp=int(0))
 print(f"LEN: {len(symbols)}")
 
