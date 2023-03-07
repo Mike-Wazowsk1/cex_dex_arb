@@ -81,6 +81,16 @@ def make_link_to_ex(ex, symbol):
             get_s = r.url.split("/")[-1].replace("_", "").lower()
             if get_s == symbol or symbol in get_s:
                 return r.url
+            
+    if ex == "bybit":
+        base_link = "https://www.bybit.com/en-US/trade/spot/"
+        get_s = None
+        for i in range(len(symbol)):
+            base = symbol[:i]
+            asset = symbol[i:]
+            r = requests.get(base_link+f"{base.upper()}/{asset.upper()}")
+            get_s = r.url.split("/")[-2:].replace("/", "").lower()
+            if get_s == symbol or symbol in get_s:
     return "https://www.google.com/"
 
 
