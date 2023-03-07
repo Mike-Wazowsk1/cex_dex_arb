@@ -69,8 +69,8 @@ async def callback_handler(update: Update, context:ContextTypes.DEFAULT_TYPE):
         text = f"""
 {symbol}
 
-\|[{ex1}](https)\| {round(asks_price1,6)} (15)
-\|{ex2}\| {round(bids_price2,6)} (15)
+\|[{ex1}](https)\| {str(round(asks_price1,6)).replace(".",",")} (15)
+\|{ex2}\| {str(round(bids_price2,6)).replace(".",',')} (15)
 
 Spread: {round(asks_price1*value -bids_price2*value)}"""
         await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
