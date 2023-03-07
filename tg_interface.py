@@ -22,7 +22,7 @@ import requests
 import datetime
 from keyboards import Keyboard
 from uuid import uuid4
-
+from arb import ArbitrageManager
 API = "6191286786:AAHc2hvpRBkR0TSDS1dJmsUpPTegq5Wm_qE"
 
 logging.basicConfig(format='%(levelname)s - %(message)s',
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 KEYBOARD = Keyboard()
 MIN_USDT = 10
 MIN_AMOUNT = 0
-
+arb = ArbitrageManager()
 
 async def ave_me(update: Update, context) -> None:
 
@@ -53,7 +53,15 @@ async def monitoring(update: Update, context):
     await update.message.reply_text(text,reply_markup=KEYBOARD.main_keyboard)
 
 
+async def spread_list(update: Update, context):
+    opps = arb.main()
+    buttons  = []
+    for op in opps:
+        symbol,ex1,ex2,bid,ask ,value = op
 
+        buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'fsd_{ex1}')])
+    rep = InlineKeyboardMarkup(buttons)
+    await update.message.reply_text("Список спредов",reply_markup=rep)
 
 async def volume_min(update: Update, context):
     text = f"""
@@ -73,6 +81,11 @@ def main() -> None:
     application.add_handler(CommandHandler('start', start))
     application.add_handler(MessageHandler(filters.Regex("Мониторинг"), monitoring))
     application.add_handler(MessageHandler(filters.Regex("Объем (min)"), volume_min))
+    application.add_handler(MessageHandler(filters.Regex("Список спредов"), spread_list))
+
+
+
+
 
 
     application.run_polling()
