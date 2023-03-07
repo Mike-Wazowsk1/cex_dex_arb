@@ -59,7 +59,7 @@ async def spread_list(update: Update, context):
     for i,op in enumerate(opps):
         symbol,ex1,ex2,bid,ask ,value = op
         if ex1 != 'gate' and ex2 !='gate':
-            
+            print(symbol,ex1,ex2,bid,ask ,value )
             buttons.append([InlineKeyboardButton(text = f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}",callback_data=f'fsd_{ex1}')])
     rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов",reply_markup=rep)
