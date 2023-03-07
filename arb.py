@@ -63,7 +63,8 @@ class ArbitrageManager:
             if len(profit[profit>0]) > 0:
                 profitable = profit[profit>0]
                 for i in range(len(profitable)):
-                    print(f"BUY: {ex1} SELL: {ex2} PAIR: {symbols[i]} PROFIT: {profit[i]}")
+                    if profit[i] > 0:
+                        print(f"BUY: {ex1} SELL: {ex2} PAIR: {symbols[i]} PROFIT: {profit[i]}")
 
             
             
