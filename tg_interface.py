@@ -142,7 +142,24 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
         await query.edit_message_text(text=text, reply_markup=rep)
+    
+    if "refresh_spread" in query.data:
+        opps = arb.main()
+        buttons = []
+        context.user_data['current_page'] = 0
+        for i, op in enumerate(opps):
+            symbol, ex1, ex2, ask, bid, value, pr = op
+            if ex1 != 'gate' and ex2 != 'gate':
+                buttons.append([InlineKeyboardButton(
+                    text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
+        context.user_data['menu'] = buttons
+        buttons = context.user_data.get("menu")[context.user_data.get(
+            "current_page")*5:context.user_data.get("current_page")*5+5]
+        buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
+            "refresh_spread", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
 
+        rep = InlineKeyboardMarkup(buttons)
+        await update.message.reply_text("Список спредов", reply_markup=rep)
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -158,7 +175,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     buttons = context.user_data.get("menu")[context.user_data.get(
         "current_page")*5:context.user_data.get("current_page")*5+5]
     buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-        "Refresh", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
+        "refresh_spread", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
 
     rep = InlineKeyboardMarkup(buttons)
     await update.message.reply_text("Список спредов", reply_markup=rep)
