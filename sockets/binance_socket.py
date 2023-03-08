@@ -88,7 +88,7 @@ def reciver(client, current_batch, global_dict):
 #     elif type == 'thread':
 #         asyncio.ensure_future(writer(client,current_batch,loop))
 
-async def get_snapshot(symbol):
+def get_snapshot(symbol):
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     msg = requests.get(base_url).json()
 
@@ -146,14 +146,13 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
-    for symbol in symbols:
-        await get_snapshot(symbol)
-
-    ps = []
+    # for symbol in symbols:
+    #     get_snapshot(symbol)
+    with mp.Pool() as pool:
+        pool.map(get_snapshot,symbols)
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # print(current_batch)
-        print(current_batch[:3])
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
         # p.join()
