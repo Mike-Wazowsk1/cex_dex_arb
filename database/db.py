@@ -82,6 +82,7 @@ class DataBase:
             self.cursor.execute(q)
             self.conn.commit()
         except psycopg2.OperationalError as e:
+            print("I'm operation")
             print(e)
             self.cursor.close()
             self.conn.close()
