@@ -96,6 +96,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ex1, symbol)[0]
         asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
             ex2, symbol)[0]
+        print(asks_price1,value,bids_price2,value)
         text = f"""
 {symbol}
 
