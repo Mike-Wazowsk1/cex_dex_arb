@@ -90,22 +90,22 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     print(query.data)
     if 'ex' in query.data and "next" not in query.data and "prev" not in query.data:
-#         data = query.data.split("_")[2:]
-#         ex1, ex2, symbol, value = data
-#         # value = 0
-#         asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
-#             ex1, symbol)[0]
-#         asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
-#             ex2, symbol)[0]
+        data = query.data.split("_")[2:]
+        ex1, ex2, symbol, value = data
+        # value = 0
+        asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
+            ex1, symbol)[0]
+        asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
+            ex2, symbol)[0]
 
-#         text = f"""
-# {symbol}
+        text = f"""
+{symbol}
 
-# \|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} 15
-# \|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
+\|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} 15
+\|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
 
-# Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
-        await query.edit_message_text(text="WTF", parse_mode=ParseMode.MARKDOWN_V2)
+Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
+        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
     if "prev" in query.data:
         text = "Список спредов"
@@ -145,7 +145,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     buttons = context.user_data.get("menu")[context.user_data.get(
         "current_page")*5:context.user_data.get("current_page")*5+5]
     buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-        "Refresh", callback_data="prev"), InlineKeyboardButton(">", callback_data="nex")])
+        "Refresh", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
 
     rep = InlineKeyboardMarkup(buttons)
     await update.message.reply_text("Список спредов", reply_markup=rep)
