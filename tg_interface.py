@@ -146,6 +146,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
     if "refresh_spread" in query.data:
         opps = arb.main()
         buttons = []
+        text = "Список спредов"
         context.user_data['current_page'] = 0
         for i, op in enumerate(opps):
             symbol, ex1, ex2, ask, bid, value, pr = op
@@ -159,7 +160,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             "refresh_spread", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
 
         rep = InlineKeyboardMarkup(buttons)
-        await update.message.reply_text("Список спредов", reply_markup=rep)
+        await query.edit_message_text(text=text, reply_markup=rep)
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
