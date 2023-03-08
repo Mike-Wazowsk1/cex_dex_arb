@@ -37,6 +37,9 @@ class ArbitrageManager:
         ex1_data = np.array(self.db.get_symbols_data(ex1, symbols))
         ex2_data = np.array(self.db.get_symbols_data(ex2, symbols))
 
+        #Symbols
+        symbols = ex1_data[:,0]
+
         # Asks avg price
         asks_price_ex1 = ex1_data[:, 1]
         asks_price_ex2 = ex2_data[:, 1]
