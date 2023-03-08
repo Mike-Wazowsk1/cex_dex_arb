@@ -10,17 +10,18 @@ DB = config.DB
 class DataBase:
     def __init__(self):
         keepalive_kwargs = {
-            "keepalives": 300,
+            "keepalives": 30000,
             "keepalives_idle": 30,
-            "keepalives_interval": 300,
-            "keepalives_count": 300,
+            "keepalives_interval": 30000,
+            "keepalives_count": 30000,
         }
 
         self.conn = psycopg2.connect(
             host=DB.host,
             database=DB.dbname,
             user=DB.user,
-            password=DB.password
+            password=DB.password,
+            **keepalive_kwargs
         )
 
         self.cursor = self.conn.cursor(cursor_factory=DictCursor)
@@ -30,10 +31,10 @@ class DataBase:
         q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp})"
         if self.conn.closed:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
 
             self.conn = psycopg2.connect(host=DB.host,
@@ -49,10 +50,10 @@ class DataBase:
             self.conn.close()
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
 
             self.conn = psycopg2.connect(host=DB.host,
@@ -70,10 +71,10 @@ class DataBase:
         q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {Decimal(bids_price)},asks_amount = {Decimal(asks_amount)},bids_amount = {Decimal(bids_amount)}, timestamp = {timestamp} WHERE symbol = '{symbol}'"
         if self.conn.closed:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
 
             self.conn = psycopg2.connect(host=DB.host,
@@ -88,10 +89,10 @@ class DataBase:
             self.conn.commit()
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
@@ -111,10 +112,10 @@ class DataBase:
             return data
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
@@ -136,10 +137,10 @@ class DataBase:
             return data
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
@@ -160,10 +161,10 @@ class DataBase:
             return data
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
@@ -187,10 +188,10 @@ WHERE table_schema = 'public' and table_catalog='cex_dex'
             return data
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
-                "keepalives": 300,
+                "keepalives": 30000,
                 "keepalives_idle": 30,
-                "keepalives_interval": 300,
-                "keepalives_count": 300,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
             }
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
