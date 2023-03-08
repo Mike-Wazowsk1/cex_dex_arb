@@ -78,7 +78,7 @@ def make_link_to_ex(ex, symbol):
             base = symbol[:i]
             asset = symbol[i:]
             r = requests.get(base_link+f"{base.upper()}_{asset.upper()}?type=spot")
-            get_s = r.url.split("/")[-1].replace("_", "").lower()
+            get_s = r.url.split("/")[-1].replace("_", "").replace("?type=spot",'').lower()
             print(get_s)
             if get_s == symbol:
                 return r.url
