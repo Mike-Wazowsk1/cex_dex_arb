@@ -123,6 +123,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
     if "next" in query.data:
         text = "Список спредов"
         page = context.user_data['current_page']
+        buttons = context.user_data.get("menu")
         if page == (len(buttons) - 1)//5:
             page = (len(buttons) - 1)//5-1
         buttons = context.user_data.get("menu")[(page+1)*5:(page+1)*5+5]
