@@ -73,24 +73,14 @@ def make_link_to_ex(ex, symbol):
 
     if ex == 'binance':
         base_link = "https://www.binance.com/ru/trade/"
-        get_s = None
-        for i in range(len(symbol)):
-            if i == 0:
-                continue
-            base = symbol[:i]
-            asset = symbol[i:]
-            r = requests.get(base_link+f"{base.upper()}_{asset.upper()}?type=spot")
-            get_s = r.url.split("/")[-1].replace("_", "").replace("?type=spot",'').lower()
-            print(get_s)
-            if get_s == symbol:
-                return r.url
+
+        r = requests.get(base_link+f"{symbol}?type=spot")
+        get_s = r.url.split("/")[-1].replace("_", "").replace("?type=spot",'').lower()
+        if get_s == symbol:
+            return r.url
             
     if ex == "byb1it":
-        ret = None
-        tmp = make_link_to_ex("binance",symbol)
-        if tmp != "https://www.google.com/":
-            tmp.replace("?type=spot",'').split("/")
-
+        return f"https://www.bybit.com/en-US/trade/spot/{symbol[:-4]}/{symbol[-4:]}"
     return "https://www.google.com/"
 
 
