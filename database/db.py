@@ -68,6 +68,19 @@ class DataBase:
             self.conn.commit()
             self.cursor.close()
             self.conn.close()
+        except psycopg2.ProgrammingError as e:
+            print(e)
+            self.cursor.close()
+            self.conn.close()
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
 
     def update_db(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {Decimal(bids_price)},asks_amount = {Decimal(asks_amount)},bids_amount = {Decimal(bids_amount)}, timestamp = {timestamp} WHERE symbol = '{symbol}'"
@@ -94,6 +107,9 @@ class DataBase:
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+
+
+
 
     def get_from_db(self, db_name, symbol):
         q = f"SELECT asks_price,bids_price, asks_amount,bids_amount,timestamp from {db_name} WHERE symbol = '{symbol}' ORDER BY symbol"
