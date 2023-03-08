@@ -88,7 +88,7 @@ def make_link_to_ex(ex, symbol):
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    if 'spread' in query.data:
+    if 'sp' in query.data:
 
         data = query.data.split("_")[1:]
         ex1, ex2, symbol,value = data
@@ -111,13 +111,14 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     opps = arb.main()
     buttons = []
-    for i, op in enumerate(opps):
+    for i, op in enumerate(opps[:5]):
         symbol, ex1, ex2, ask, bid, value,pr = op
         if ex1 != 'gate' and ex2 != 'gate':
             print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
-                text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}_{round(value)}')])
-    rep = InlineKeyboardMarkup(buttons[:5])
+                text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'sp_{ex1}_{ex2}_{symbol}_{round(value)}')])
+    buttons.append([InlineKeyboardButton("<",callback_data="prev"),InlineKeyboardButton("Refresh",callback_data="prev"),InlineKeyboardButton(">",callback_data="prev")])
+    rep = InlineKeyboardMarkup(buttons)
     await update.message.reply_text("Список спредов", reply_markup=rep)
 
 
