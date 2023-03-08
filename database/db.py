@@ -9,20 +9,21 @@ DB = config.DB
 
 class DataBase:
     def __init__(self):
+        keepalive_kwargs = {
+            "keepalives": 300,
+            "keepalives_idle": 30,
+            "keepalives_interval": 300,
+            "keepalives_count": 300,
+        }
+
         self.conn = psycopg2.connect(
             host=DB.host,
             database=DB.dbname,
             user=DB.user,
             password=DB.password
         )
-        keepalive_kwargs = {
-    "keepalives": 300,
-    "keepalives_idle": 30,
-    "keepalives_interval": 300,
-    "keepalives_count": 300,
-}
 
-        self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+        self.cursor = self.conn.cursor(cursor_factory=DictCursor)
         self.conn.autocommit = True
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
@@ -31,10 +32,6 @@ class DataBase:
             self.cursor.execute(q)
             self.conn.commit()
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
@@ -42,7 +39,12 @@ class DataBase:
                 "keepalives_count": 300,
             }
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
@@ -53,18 +55,18 @@ class DataBase:
             self.cursor.execute(q)
             self.conn.commit()
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
                 "keepalives_interval": 300,
                 "keepalives_count": 300,
             }
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
@@ -76,18 +78,19 @@ class DataBase:
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
                 "keepalives_interval": 300,
                 "keepalives_count": 300,
             }
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password,
+                                         **keepalive_kwargs)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
@@ -100,18 +103,18 @@ class DataBase:
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
                 "keepalives_interval": 300,
                 "keepalives_count": 300,
             }
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
@@ -124,18 +127,18 @@ class DataBase:
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
                 "keepalives_interval": 300,
                 "keepalives_count": 300,
             }
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
@@ -151,18 +154,18 @@ WHERE table_schema = 'public' and table_catalog='cex_dex'
             data = self.cursor.fetchall()
             return data
         except psycopg2.InterfaceError as exc:
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
             keepalive_kwargs = {
                 "keepalives": 300,
                 "keepalives_idle": 30,
                 "keepalives_interval": 300,
                 "keepalives_count": 300,
             }
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor,**keepalive_kwargs)
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
