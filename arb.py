@@ -63,7 +63,7 @@ class ArbitrageManager:
             symbols,profit,value,bids,asks = self.get_profit(ex1,ex2)
             for i in range(len(profit)):
                 if profit[i] > 0:
-                    opps.append([symbols[i],ex1,ex2,asks[i],bids[i],value[i],profitable[i]])
+                    opps.append([symbols[i],ex1,ex2,asks[i],bids[i],value[i],profit[i]])
         return opps
 
             
