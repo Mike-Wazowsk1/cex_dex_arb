@@ -91,15 +91,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if 'spread' in query.data:
 
         data = query.data.split("_")[1:]
-        print(data)
         ex1, ex2, symbol,value = data
         # value = 0
         asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
             ex1, symbol)[0]
         asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
             ex2, symbol)[0]
-        print(asks_price1,value,bids_price2,value)
-        print(make_link_to_ex(ex1,symbol))
 
         text = f"""
 {symbol}
@@ -107,7 +104,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 \|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} 15
 \|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
 
-Spread: {str(round(asks_price1*Decimal(value) - bids_price2*Decimal(value))).replace(".",",")}"""
+Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
         await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
