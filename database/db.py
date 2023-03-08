@@ -94,6 +94,20 @@ class DataBase:
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+        finally:
+            print("I'm finally")
+            self.cursor.close()
+            self.conn.close()
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
+
 
     def update_db(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {Decimal(bids_price)},asks_amount = {Decimal(asks_amount)},bids_amount = {Decimal(bids_amount)}, timestamp = {timestamp} WHERE symbol = '{symbol}'"
