@@ -148,7 +148,7 @@ async def main():
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
     # for symbol in symbols:
     #     get_snapshot(symbol)
-    with mp.Pool(processes=2) as pool:
+    with mp.Pool(processes=4) as pool:
         pool.map(get_snapshot,symbols)
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
