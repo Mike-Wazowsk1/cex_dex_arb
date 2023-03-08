@@ -26,7 +26,7 @@ class ArbitrageManager:
     
     def calc_profit(self,bids,asks,bids_amount, asks_amount):
         value = np.minimum(bids_amount,asks_amount)
-        profit = bids * value - asks * value 
+        profit = asks * value - bids * value 
         return profit, value
 
 
