@@ -9,23 +9,24 @@ DB = config.DB
 
 class DataBase:
     def __init__(self):
-        keepalive_kwargs = {
-            "keepalives": 30000,
-            "keepalives_idle": 30,
-            "keepalives_interval": 30000,
-            "keepalives_count": 30000,
-        }
+        pass
+        # keepalive_kwargs = {
+        #     "keepalives": 30000,
+        #     "keepalives_idle": 30,
+        #     "keepalives_interval": 30000,
+        #     "keepalives_count": 30000,
+        # }
 
-        self.conn = psycopg2.connect(
-            host=DB.host,
-            database=DB.dbname,
-            user=DB.user,
-            password=DB.password,
-            **keepalive_kwargs
-        )
+        # self.conn = psycopg2.connect(
+        #     host=DB.host,
+        #     database=DB.dbname,
+        #     user=DB.user,
+        #     password=DB.password,
+        #     **keepalive_kwargs
+        # )
 
-        self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-        self.conn.autocommit = True
+        # self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+        # self.conn.autocommit = True
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp})"
