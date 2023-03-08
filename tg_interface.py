@@ -152,7 +152,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             symbol, ex1, ex2, ask, bid, value, pr = op
             if ex1 != 'gate' and ex2 != 'gate':
                 buttons.append([InlineKeyboardButton(
-                    text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
+                    text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
         context.user_data['menu'] = buttons
         buttons = context.user_data.get("menu")[context.user_data.get(
             "current_page")*5:context.user_data.get("current_page")*5+5]
@@ -171,7 +171,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         symbol, ex1, ex2, ask, bid, value, pr = op
         if ex1 != 'gate' and ex2 != 'gate':
             buttons.append([InlineKeyboardButton(
-                text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
+                text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
     context.user_data['menu'] = buttons
     buttons = context.user_data.get("menu")[context.user_data.get(
         "current_page")*5:context.user_data.get("current_page")*5+5]
@@ -189,6 +189,7 @@ async def volume_min(update: Update, context: ContextTypes.DEFAULT_TYPE):
 Все спреды будут появляться с объемами не менее указанного!
     (пример 100.5)
 """
+    await update.message.reply_text(text)
 
 
 def main() -> None:
