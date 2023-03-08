@@ -106,7 +106,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
         button = [[InlineKeyboardButton(text='Назад',callback_data='back_spread')]]
-        rep = InlineKeyboardMarkup(rep)
+        rep = InlineKeyboardMarkup(button)
         await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2,reply_markup=rep)
 
     if "prev" in query.data:
