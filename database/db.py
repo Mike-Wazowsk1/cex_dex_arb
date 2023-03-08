@@ -27,10 +27,26 @@ class DataBase:
         self.conn.autocommit = True
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
-        q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp}) "
+        q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp})"
+        if self.conn.closed:
+            keepalive_kwargs = {
+                "keepalives": 300,
+                "keepalives_idle": 30,
+                "keepalives_interval": 300,
+                "keepalives_count": 300,
+            }
+
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
         try:
             self.cursor.execute(q)
             self.conn.commit()
+            self.conn.close()
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
                 "keepalives": 300,
@@ -48,9 +64,25 @@ class DataBase:
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+            self.conn.close()
 
     def update_db(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {Decimal(bids_price)},asks_amount = {Decimal(asks_amount)},bids_amount = {Decimal(bids_amount)}, timestamp = {timestamp} WHERE symbol = '{symbol}'"
+        if self.conn.closed:
+            keepalive_kwargs = {
+                "keepalives": 300,
+                "keepalives_idle": 30,
+                "keepalives_interval": 300,
+                "keepalives_count": 300,
+            }
+
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, **keepalive_kwargs)
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
         try:
             self.cursor.execute(q)
             self.conn.commit()
