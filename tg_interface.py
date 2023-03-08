@@ -157,7 +157,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         buttons = context.user_data.get("menu")[context.user_data.get(
             "current_page")*5:context.user_data.get("current_page")*5+5]
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-            "refresh_spread", callback_data="prev"), InlineKeyboardButton(">", callback_data="next")])
+            "Refresh", callback_data="Refresh"), InlineKeyboardButton(">", callback_data="next")])
 
         rep = InlineKeyboardMarkup(buttons)
         await query.edit_message_text(text=text, reply_markup=rep)
