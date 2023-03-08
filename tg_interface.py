@@ -75,6 +75,8 @@ def make_link_to_ex(ex, symbol):
         base_link = "https://www.binance.com/ru/trade/"
         get_s = None
         for i in range(len(symbol)):
+            if i == 0:
+                continue
             base = symbol[:i]
             asset = symbol[i:]
             r = requests.get(base_link+f"{base.upper()}_{asset.upper()}?type=spot")
