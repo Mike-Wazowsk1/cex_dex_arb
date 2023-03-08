@@ -118,6 +118,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
             "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
+        context.user_data['current_page'] = page - 1
         await query.edit_message_text(text=text, reply_markup=rep)
 
     if "next" in query.data:
@@ -130,6 +131,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
             "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
+        context.user_data['current_page'] = page + 1
         await query.edit_message_text(text=text, reply_markup=rep)
 
     if "back_spread" in query.data:
