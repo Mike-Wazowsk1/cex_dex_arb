@@ -88,6 +88,7 @@ def make_link_to_ex(ex, symbol):
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    print(query.data)
     if 'ex' in query.data and "next" not in query.data and "prev" not in query.data:
 #         data = query.data.split("_")[2:]
 #         ex1, ex2, symbol, value = data
