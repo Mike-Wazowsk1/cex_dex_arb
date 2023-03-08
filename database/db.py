@@ -64,6 +64,7 @@ class DataBase:
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+            self.cursor.close()
             self.conn.close()
         except psycopg2.InterfaceError as exc:
             keepalive_kwargs = {
@@ -82,6 +83,7 @@ class DataBase:
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+            self.cursor.close()
             self.conn.close()
 
     def update_db(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
