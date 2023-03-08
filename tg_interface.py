@@ -105,7 +105,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 \|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
 
 Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
-        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
+        button = [[InlineKeyboardButton(text='Назад',callback_data='back_spread')]]
+        rep = InlineKeyboardMarkup(rep)
+        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2,reply_markup=rep)
 
     if "prev" in query.data:
         text = "Список спредов"
