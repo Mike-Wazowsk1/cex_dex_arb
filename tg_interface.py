@@ -120,7 +120,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
                 text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)} {round(pr)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}_{round(value)}')])
-    rep = InlineKeyboardMarkup(buttons,)
+    rep = InlineKeyboardMarkup(buttons[:5])
     await update.message.reply_text("Список спредов", reply_markup=rep)
 
 
