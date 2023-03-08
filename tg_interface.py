@@ -115,11 +115,11 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     opps = arb.main()
     buttons = []
     for i, op in enumerate(opps):
-        symbol, ex1, ex2, ask, bid, value = op
+        symbol, ex1, ex2, ask, bid, value,pr = op
         if ex1 != 'gate' and ex2 != 'gate':
             print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
-                text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}_{round(value)}')])
+                text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)} {round(pr)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}_{round(value)}')])
     rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов", reply_markup=rep)
 
