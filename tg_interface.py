@@ -26,6 +26,7 @@ from keyboards import Keyboard
 from uuid import uuid4
 from arb import ArbitrageManager
 import requests
+from decimal import Decimal
 API = "6191286786:AAHc2hvpRBkR0TSDS1dJmsUpPTegq5Wm_qE"
 
 logging.basicConfig(format='%(levelname)s - %(message)s',
@@ -103,7 +104,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 \|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} 15
 \|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
 
-Spread: {round(asks_price1*value -bids_price2*value)}"""
+Spread: {round(asks_price1*Decimal(value) -bids_price2*Decimal(value))}"""
         await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
