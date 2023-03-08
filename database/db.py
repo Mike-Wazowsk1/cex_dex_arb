@@ -30,15 +30,6 @@ class DataBase:
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp})"
-        if self.conn.closed:
-
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password)
-
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
         try:
 
             self.conn = psycopg2.connect(
@@ -56,6 +47,8 @@ class DataBase:
             self.cursor.close()
             self.conn.close()
         except psycopg2.InterfaceError as exc:
+            print("I'm InterfaceError")
+
 
             self.conn = psycopg2.connect(host=DB.host,
                                          database=DB.dbname,
@@ -69,6 +62,8 @@ class DataBase:
             self.cursor.close()
             self.conn.close()
         except psycopg2.ProgrammingError as e:
+            print("I'm ProgrammingError")
+
             print(e)
             self.cursor.close()
             self.conn.close()
