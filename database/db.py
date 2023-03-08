@@ -45,6 +45,23 @@ class DataBase:
             self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
         try:
+            keepalive_kwargs = {
+                "keepalives": 30000,
+                "keepalives_idle": 30,
+                "keepalives_interval": 30000,
+                "keepalives_count": 30000,
+            }
+
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+                **keepalive_kwargs
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
             self.conn.close()
