@@ -79,7 +79,7 @@ def make_link_to_ex(ex, symbol):
         if get_s == symbol:
             return r.url
             
-    if ex == "byb1it":
+    if ex == "bybit":
         return f"https://www.bybit.com/en-US/trade/spot/{symbol[:-4]}/{symbol[-4:]}"
     return "https://www.google.com/"
 
