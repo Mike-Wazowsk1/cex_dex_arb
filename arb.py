@@ -52,8 +52,8 @@ class ArbitrageManager:
         bids_amount_ex1 = ex1_data[:, 4]
         bids_amount_ex2 = ex2_data[:, 4]
 
-        profit, value = self.calc_profit(bids_price_ex1,asks_price_ex2,bids_amount_ex1,asks_amount_ex2)
-        return np.array(symbols),profit,value,bids_price_ex1,asks_price_ex2
+        profit, value = self.calc_profit(bids_price_ex2,asks_price_ex1,bids_amount_ex2,asks_amount_ex1)
+        return np.array(symbols),profit,value,bids_price_ex2,asks_price_ex1
     
     def main(self):
         exs = self.make_exchange_pairs()
@@ -65,7 +65,7 @@ class ArbitrageManager:
                 profitable = profit[profit>0]
                 for i in range(len(profitable)):
                     if profitable[i] > 0:
-                        opps.append([symbols[i],ex1,ex2,bids[i],asks[i],value[i]])
+                        opps.append([symbols[i],ex1,ex2,asks[i],bids[i],value[i]])
         return opps
 
             

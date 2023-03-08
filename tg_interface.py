@@ -115,7 +115,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     opps = arb.main()
     buttons = []
     for i, op in enumerate(opps):
-        symbol, ex1, ex2, bid, ask, value = op
+        symbol, ex1, ex2, ask, bid, value = op
         if ex1 != 'gate' and ex2 != 'gate':
             print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
