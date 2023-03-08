@@ -116,7 +116,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             page = 1
         buttons = context.user_data.get("menu")[(page-1)*5:(page-1)*5+5]
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-            "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
+            "Refresh", callback_data="refresh_spread"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
         context.user_data['current_page'] = page - 1
         await query.edit_message_text(text=text, reply_markup=rep)
@@ -129,7 +129,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             page = (len(buttons) - 1)//5-1
         buttons = context.user_data.get("menu")[(page+1)*5:(page+1)*5+5]
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-            "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
+            "Refresh", callback_data="refresh_spread"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
         context.user_data['current_page'] = page + 1
         await query.edit_message_text(text=text, reply_markup=rep)
@@ -139,7 +139,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         page = context.user_data['current_page']
         buttons = context.user_data.get("menu")[(page)*5:(page)*5+5]
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
-            "Refresh", callback_data="refresh"), InlineKeyboardButton(">", callback_data="next")])
+            "Refresh", callback_data="refresh_spread"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
         await query.edit_message_text(text=text, reply_markup=rep)
     
