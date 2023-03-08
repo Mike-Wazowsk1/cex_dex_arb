@@ -90,8 +90,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if 'spread' in query.data:
 
         data = query.data.split("_")[1:]
-        ex1, ex2, symbol = data
-        value = 0
+        ex1, ex2, symbol,value = data
+        # value = 0
         asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
             ex1, symbol)[0]
         asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
@@ -114,7 +114,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if ex1 != 'gate' and ex2 != 'gate':
             print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
-                text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}')])
+                text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'spread_{ex1}_{ex2}_{symbol}_{round(value)}')])
     rep = InlineKeyboardMarkup(buttons,)
     await update.message.reply_text("Список спредов", reply_markup=rep)
 
