@@ -5,6 +5,9 @@ from itertools import permutations
 
 # symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp
 
+#ASK - RED
+#BID - GREEN
+
 
 class ArbitrageManager:
     def __init__(self) -> None:
@@ -23,16 +26,14 @@ class ArbitrageManager:
         ex1_symbols = np.array(self.db.get_arb_info(db_name=ex1))[:, 0]
         ex2_symbols = np.array(self.db.get_arb_info(db_name=ex2))[:, 0]
         return list(set(ex1_symbols) & set(ex2_symbols))
-    
-    def calc_profit(self,bids,asks,bids_amount, asks_amount):
-        value = np.minimum(bids_amount,asks_amount)
-        profit = asks * value - bids * value 
+
+    def calc_profit(self, bids, asks, bids_amount, asks_amount):
+        value = np.minimum(bids_amount, asks_amount)
+        profit = bids * value - asks * value
         return profit, value
 
-
-
     def get_profit(self, ex1, ex2):
-        symbols = self.get_common_pairs(ex1,ex2)
+        symbols = self.get_common_pairs(ex1, ex2)
         ex1_data = np.array(self.db.get_symbols_data(ex1, symbols))
         ex2_data = np.array(self.db.get_symbols_data(ex2, symbols))
 
@@ -52,22 +53,22 @@ class ArbitrageManager:
         bids_amount_ex1 = ex1_data[:, 4]
         bids_amount_ex2 = ex2_data[:, 4]
 
-        profit, value = self.calc_profit(bids_price_ex2,asks_price_ex1,bids_amount_ex2,asks_amount_ex1)
-        return np.array(symbols),profit,value,bids_price_ex2,asks_price_ex1
-    
+        profit, value = self.calc_profit(
+            bids_price_ex2, asks_price_ex1, bids_amount_ex2, asks_amount_ex1)
+        return np.array(symbols), profit, value, bids_price_ex2, asks_price_ex1
+
     def main(self):
         exs = self.make_exchange_pairs()
         opps = []
         for pair in exs:
-            ex1,ex2 = pair
-            symbols,profit,value,bids,asks = self.get_profit(ex1,ex2)
+            ex1, ex2 = pair
+            symbols, profit, value, bids, asks = self.get_profit(ex1, ex2)
             for i in range(len(profit)):
                 if profit[i] > 0:
-                    opps.append([symbols[i],ex1,ex2,asks[i],bids[i],value[i],profit[i]])
+                    opps.append([symbols[i], ex1, ex2, asks[i],
+                                bids[i], value[i], profit[i]])
         return opps
 
-            
-            
 
 # arb = ArbitrageManager()
 # print(arb.main())
