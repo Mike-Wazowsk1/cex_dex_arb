@@ -55,7 +55,7 @@ class ArbitrageManager:
 
         profit, value = self.calc_profit(
             bids_price_ex2, asks_price_ex1, bids_amount_ex2, asks_amount_ex1)
-        return np.array(symbols), profit, value, bids_price_ex2, asks_price_ex1
+        return symbols, profit, value, bids_price_ex2, asks_price_ex1
 
     def main(self):
         exs = self.make_exchange_pairs()
