@@ -88,9 +88,9 @@ def make_link_to_ex(ex, symbol):
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    if 'sp' in query.data:
+    if 'ex' in query.data :
 
-        data = query.data.split("_")[1:]
+        data = query.data.split("_")[2:]
         ex1, ex2, symbol,value = data
         # value = 0
         asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
@@ -106,18 +106,45 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
         await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2)
+    if "prev" in query.data:
+        text = "Список спредов"
+        page = context.user_data['current_page']
+        if page == 0:
+            page = 1
+        buttons = context.user_data.get("menu")[(page-1)*5:(page-1)*5+5]
+        buttons.append([InlineKeyboardButton("<",callback_data="prev"),InlineKeyboardButton("Refresh",callback_data="refresh"),InlineKeyboardButton(">",callback_data="next")])
+        rep = InlineKeyboardMarkup(buttons)
+        await query.edit_message_text(text=text,reply_markup=rep)
+
+    if "next" in query.data:
+        text = "Список спредов"
+        page = context.user_data['current_page']
+        if page == 0:
+            page = 1
+        elif page == (len(buttons) - 1)//5:
+            page = (len(buttons) - 1)//5-1
+        buttons = context.user_data.get("menu")[(page+1)*5:(page+1)*5+5]
+        buttons.append([InlineKeyboardButton("<",callback_data="prev"),InlineKeyboardButton("Refresh",callback_data="refresh"),InlineKeyboardButton(">",callback_data="next")])
+        rep = InlineKeyboardMarkup(buttons)
+        await query.edit_message_text(text=text,reply_markup=rep)
+
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     opps = arb.main()
     buttons = []
-    for i, op in enumerate(opps[:5]):
+    context.user_data['current_page'] = 0
+    for i, op in enumerate(opps):
         symbol, ex1, ex2, ask, bid, value,pr = op
         if ex1 != 'gate' and ex2 != 'gate':
-            print(symbol, ex1, ex2, bid, ask, value)
             buttons.append([InlineKeyboardButton(
-                text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'sp_{ex1}_{ex2}_{symbol}_{round(value)}')])
-    buttons.append([InlineKeyboardButton("<",callback_data="prev"),InlineKeyboardButton("Refresh",callback_data="prev"),InlineKeyboardButton(">",callback_data="prev")])
+                text=f"{symbol.upper()}: {round(ask*value)} {round(ask,3)} -> {round(bid*value)} {round(bid,3)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
+    context.user_data['menu'] = buttons
+    buttons = context.user_data.get("menu")[context.user_data.get("current_page")*5:context.user_data.get("current_page")*5+5]
+    buttons.append([InlineKeyboardButton("<",callback_data="prev"),InlineKeyboardButton("Refresh",callback_data="prev"),InlineKeyboardButton(">",callback_data="nex")])
+    
+
+
     rep = InlineKeyboardMarkup(buttons)
     await update.message.reply_text("Список спредов", reply_markup=rep)
 
