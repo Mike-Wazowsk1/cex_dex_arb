@@ -47,7 +47,7 @@ def handle_orderbook(message):
         db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price, bids_price=bids_avg_price,
                      asks_amount=asks_amount, bids_amount=bids_amount, timestamp=int(timestamp))
     except:
-        ws_spot.depth_v1_stream(handle_orderbook, symbol)
+        ws_spot.depth_v1_stream(handle_orderbook, symbols)
 
     # with open(f"bybit_data/{symbol}_bids.pkl", 'wb') as f:
     #     pkl.dump(bids_avg_price, f)
