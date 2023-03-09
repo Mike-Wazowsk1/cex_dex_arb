@@ -87,6 +87,8 @@ ws_spot.depth_v1_stream(handle_orderbook, symbols)
 
 
 while True:
-    # This while loop is required for the program to run. You may execute
-    # additional code for your trading logic here.
-    time.sleep(0.1)
+    try:
+        time.sleep(0.1)
+    except:
+        ws_spot.depth_v1_stream(handle_orderbook, symbols)
+
