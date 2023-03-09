@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 KEYBOARD = Keyboard()
 MIN_USDT = 10
 MIN_AMOUNT = 0
+MAX_AMOUNT = 100
 arb = ArbitrageManager()
 db = DataBase()
 
@@ -192,6 +193,16 @@ async def volume_min(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 
+async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = f"""
+Установлен максимальный обьем: {MAX_AMOUNT}$
+Если хотите изменить значение,введите желаемый объем (в USDT).
+Все спреды будут появляться с объемами не более указанного!
+    (пример 100.5)
+"""
+    await update.message.reply_text(text)
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
@@ -203,6 +214,8 @@ def main() -> None:
         filters.Regex("Мониторинг"), monitoring))
     application.add_handler(MessageHandler(
         filters.Regex("Объем (min)"), volume_min))
+    application.add_handler(MessageHandler(
+        filters.Regex("Объем (max)"), volume_max))
     application.add_handler(MessageHandler(
         filters.Regex("Список спредов"), spread_list))
     application.add_handler(CallbackQueryHandler(callback_handler))
