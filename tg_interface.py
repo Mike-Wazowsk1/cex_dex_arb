@@ -213,9 +213,9 @@ def main() -> None:
     application.add_handler(MessageHandler(
         filters.Regex("Мониторинг"), monitoring))
     application.add_handler(MessageHandler(
-        filters.Regex("Объем (min)"), volume_min))
+        filters.Regex("(min)"), volume_min))
     application.add_handler(MessageHandler(
-        filters.Regex("Объем (max)"), volume_max))
+        filters.Regex("(max)"), volume_max))
     application.add_handler(MessageHandler(
         filters.Regex("Список спредов"), spread_list))
     application.add_handler(CallbackQueryHandler(callback_handler))
