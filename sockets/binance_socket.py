@@ -25,8 +25,10 @@ def printer(msg, path):
     param msg: input message
     """
     symbol = path.split("@")[0]
-
-    timestamp = msg['lastUpdateId']
+    try:
+        timestamp = msg['lastUpdateId']
+    except:
+        timestamp = 0 
     asks = msg['asks']
     bids = msg['bids']
 
@@ -91,8 +93,10 @@ def reciver(client, current_batch, global_dict):
 def get_snapshot(symbol):
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     msg = requests.get(base_url).json()
-
-    timestamp = msg['lastUpdateId']
+    try:
+        timestamp = msg['lastUpdateId']
+    except:
+        timestamp = 9999
     asks = msg['asks']
     bids = msg['bids']
 
