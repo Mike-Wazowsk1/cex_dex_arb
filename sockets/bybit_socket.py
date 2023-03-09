@@ -1,5 +1,5 @@
 from pybit import spot
-# from pybit import 
+# from pybit import
 import time
 import requests
 import json
@@ -14,36 +14,40 @@ db = DataBase()
 ws = spot.WebSocket(
     test=True,
 )
+
+
 def handle_orderbook(message):
     data = message['data'][0]
     symbol = data['s']
     timestamp = data['t']
     bids = data['b'][:15]
     asks = data['a'][:15]
+    try:
 
-    asks_price = np.array([float(x[0]) for x in asks[:15]])
-    asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-    numerator = (asks_price * asks_quantity).sum()
-    asks_amount = (asks_quantity).sum()
-    if asks_amount == 0:
-        asks_avg_price = 0
-        return 0
-    else:
-        asks_avg_price = numerator/asks_amount
+        asks_price = np.array([float(x[0]) for x in asks[:15]])
+        asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+        numerator = (asks_price * asks_quantity).sum()
+        asks_amount = (asks_quantity).sum()
+        if asks_amount == 0:
+            asks_avg_price = 0
+            return 0
+        else:
+            asks_avg_price = numerator/asks_amount
 
-    bids_price = np.array([float(x[0]) for x in bids[:15]])
-    bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-    numerator = (bids_price * bids_quantity).sum()
-    bids_amount = (bids_quantity).sum()
-    if bids_amount == 0:
-        bids_avg_price = 0
-        return 0
-    else:
-        bids_avg_price = numerator/bids_amount
+        bids_price = np.array([float(x[0]) for x in bids[:15]])
+        bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+        numerator = (bids_price * bids_quantity).sum()
+        bids_amount = (bids_quantity).sum()
+        if bids_amount == 0:
+            bids_avg_price = 0
+            return 0
+        else:
+            bids_avg_price = numerator/bids_amount
 
-    db.update_db(db_name="bybit",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
-    
-
+        db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price, bids_price=bids_avg_price,
+                     asks_amount=asks_amount, bids_amount=bids_amount, timestamp=int(timestamp))
+    except:
+        ws_spot.depth_v1_stream(handle_orderbook, symbol)
 
     # with open(f"bybit_data/{symbol}_bids.pkl", 'wb') as f:
     #     pkl.dump(bids_avg_price, f)
@@ -58,14 +62,15 @@ def handle_orderbook(message):
     # f.close()
 
 
-
 # Similarly, if you want to listen to the WebSockets of other markets:
 ws_spot = spot.WebSocket(test=False)
-symbols  = requests.get("https://api.bybit.com/v2/public/tickers").json()['result']
+symbols = requests.get(
+    "https://api.bybit.com/v2/public/tickers").json()['result']
 symbols = [x['symbol'] for x in symbols]
 for symbol in symbols:
     print(symbol)
-    db.init_snapshot(db_name="bybit",symbol=symbol.lower(),asks_price=0,bids_price=0,asks_amount=0,bids_amount=0,timestamp=int(0))
+    db.init_snapshot(db_name="bybit", symbol=symbol.lower(
+    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, timestamp=int(0))
 print(f"LEN: {len(symbols)}")
 
 ws_spot.depth_v1_stream(handle_orderbook, symbols)
