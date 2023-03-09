@@ -89,6 +89,7 @@ ws_spot.depth_v1_stream(handle_orderbook, symbols)
 while True:
     try:
         time.sleep(0.1)
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         ws_spot.depth_v1_stream(handle_orderbook, symbols)
 

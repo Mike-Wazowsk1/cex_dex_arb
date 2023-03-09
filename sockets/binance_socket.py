@@ -24,36 +24,40 @@ def printer(msg, path):
     Function to process the received messages
     param msg: input message
     """
-    symbol = path.split("@")[0]
     try:
+        symbol = path.split("@")[0]
+
         timestamp = msg['lastUpdateId']
-    except:
-        timestamp = 0 
-    asks = msg['asks']
-    bids = msg['bids']
 
-    asks_price = np.array([float(x[0]) for x in asks[:15]])
-    asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-    numerator = (asks_price * asks_quantity).sum()
-    asks_amount = (asks_quantity).sum()
-    asks_avg_price = numerator/asks_amount
-    if asks_amount == 0:
-        asks_avg_price = 0
-        return 0
-    else:
+        asks = msg['asks']
+        bids = msg['bids']
+
+        asks_price = np.array([float(x[0]) for x in asks[:15]])
+        asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+        numerator = (asks_price * asks_quantity).sum()
+        asks_amount = (asks_quantity).sum()
         asks_avg_price = numerator/asks_amount
-    bids_price = np.array([float(x[0]) for x in bids[:15]])
-    bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-    numerator = (bids_price * bids_quantity).sum()
-    bids_amount = (bids_quantity).sum()
-    if bids_amount == 0:
-        bids_avg_price = 0
-        return 0
-    else:
-        bids_avg_price = numerator/bids_amount
+        if asks_amount == 0:
+            asks_avg_price = 0
+            return 0
+        else:
+            asks_avg_price = numerator/asks_amount
+        bids_price = np.array([float(x[0]) for x in bids[:15]])
+        bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+        numerator = (bids_price * bids_quantity).sum()
+        bids_amount = (bids_quantity).sum()
+        if bids_amount == 0:
+            bids_avg_price = 0
+            return 0
+        else:
+            bids_avg_price = numerator/bids_amount
 
 
-    db.update_db(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+        db.update_db(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+    except Exception as e:
+        print("I'm here")
+        print(e)
+        print(msg)
 
     # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
     #     pkl.dump(bids_avg_price, f)
