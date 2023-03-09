@@ -232,3 +232,33 @@ WHERE table_schema = 'public' and table_catalog='cex_dex'
             self.cursor.close()
             self.conn.close()
             return data
+        
+    def del_from_db(self,db_name,symbol):
+        q = f"DELETE FROM {db_name} WHERE symbol = '{symbol}'"
+        try:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
+            self.cursor.close()
+            self.conn.close()
+        except:
+            self.cursor.close()
+            self.conn.close()
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
