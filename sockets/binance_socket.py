@@ -160,8 +160,9 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # print(current_batch)
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
-        time.sleep(300)
         p.start()
+        time.sleep(300)
+
         # p.join()
     # for p in ps:
         #  p.join()
