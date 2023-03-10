@@ -149,7 +149,7 @@ async def main():
     info = await client.get_exchange_info()
     symbols = [x['symbol'] for x in info['symbols']]
     symbols = [x for x in set(symbols)]
-    batch_size = ceil(300)
+    batch_size = ceil(10)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
