@@ -51,7 +51,7 @@ def printer(msg, path):
         else:
             bids_avg_price = numerator/bids_amount
 
-
+        
         db.update_db(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
     except Exception as e:
         print("I'm here")

@@ -10,23 +10,6 @@ DB = config.DB
 class DataBase:
     def __init__(self):
         pass
-        # keepalive_kwargs = {
-        #     "keepalives": 30000,
-        #     "keepalives_idle": 30,
-        #     "keepalives_interval": 30000,
-        #     "keepalives_count": 30000,
-        # }
-
-        # self.conn = psycopg2.connect(
-        #     host=DB.host,
-        #     database=DB.dbname,
-        #     user=DB.user,
-        #     password=DB.password,
-        #     **keepalive_kwargs
-        # )
-
-        # self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-        # self.conn.autocommit = True
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, timestamp):
         q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)}, {timestamp})"
@@ -262,3 +245,106 @@ WHERE table_schema = 'public' and table_catalog='cex_dex'
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+
+
+    def get_info(self):
+        q = f"""SELECT min_profit,min_amount,max_amount FROM info"""
+        try:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            data = self.cursor.fetchall()
+            self.cursor.close()
+            self.conn.close()
+            return data
+        except:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            data = self.cursor.fetchall()
+            self.cursor.close()
+            self.conn.close()
+            return data
+        
+    def get_info_col(self,col):
+        q = f"""SELECT {col} FROM info"""
+        try:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            data = self.cursor.fetchall()
+            self.cursor.close()
+            self.conn.close()
+            return data
+        except:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            data = self.cursor.fetchall()
+            self.cursor.close()
+            self.conn.close()
+            return data
+        
+
+    def update_info(self, col, val):
+        q = f"UPDATE info SET {col} = {val}"
+        try:
+            self.conn = psycopg2.connect(
+                host=DB.host,
+                database=DB.dbname,
+                user=DB.user,
+                password=DB.password,
+
+            )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
+            self.cursor.close()
+            self.conn.close()
+        except:
+            self.cursor.close()
+            self.conn.close()
+            self.conn = psycopg2.connect(host=DB.host,
+                                         database=DB.dbname,
+                                         user=DB.user,
+                                         password=DB.password, )
+
+            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            self.conn.autocommit = True
+            self.cursor.execute(q)
+            self.conn.commit()
+        

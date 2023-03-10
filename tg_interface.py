@@ -54,7 +54,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def monitoring(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global STATE
     text = f"""
-Установлено значение: {MIN_USDT}$
+Установлено значение: {db.get_info_col('min_profit')}$
 Если хотите изменить его,введите желаемую прибыль со сделки (в USDT).
 Когда появится спред с прибылью не меньше указанной, я пришлю вам сообщение!
     (пример: 10.5)
@@ -152,7 +152,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         await query.edit_message_text(text=text, reply_markup=rep)
 
     if "refresh_spread" in query.data:
-        opps = arb.main(MIN_AMOUNT, MAX_AMOUNT, MIN_USDT)
+        opps = arb.main(db.get_info_col('min_amount'), db.get_info_col('max_amount'), db.get_info_col('min_profit'))
         buttons = []
         text = "Список спредов"
         context.user_data['current_page'] = 0
@@ -174,7 +174,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    opps = arb.main(MIN_AMOUNT, MAX_AMOUNT, MIN_USDT)
+    opps = arb.main(db.get_info_col('min_amount'), db.get_info_col('max_amount'), db.get_info_col('min_profit'))
     buttons = []
     context.user_data['current_page'] = 0
     for i, op in enumerate(opps):
@@ -197,7 +197,7 @@ async def volume_min(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global STATE
 
     text = f"""
-Установлен минимальный обьем: {MIN_AMOUNT}$
+Установлен минимальный обьем: {db.get_info_col('min_amount')}$
 Если хотите изменить значение,введите желаемый объем (в USDT).
 Все спреды будут появляться с объемами не менее указанного!
     (пример 100.5)
@@ -209,7 +209,7 @@ async def volume_min(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global STATE
     text = f"""
-Установлен максимальный обьем: {MAX_AMOUNT}$
+Установлен максимальный обьем: {db.get_info_col('max_amount')}$
 Если хотите изменить значение,введите желаемый объем (в USDT).
 Все спреды будут появляться с объемами не более указанного!
     (пример 100.5)
@@ -223,13 +223,13 @@ async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         text = "Значение успешно применено"
         if STATE == 0:
-            MIN_USDT = Decimal(update.message.text)
+            db.update_info('min_profit',Decimal(update.message.text))
             STATE = None
         if STATE == 1:
-            MIN_AMOUNT = Decimal(update.message.text)
+            db.update_info('min_amount',Decimal(update.message.text))
             STATE = None
         if STATE == 2:
-            MAX_AMOUNT = Decimal(update.message.text)
+            db.update_info('max_amount',Decimal(update.message.text))
             STATE = None
         await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
     except Exception as e:
