@@ -299,7 +299,7 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             data = self.cursor.fetchall()
             self.cursor.close()
             self.conn.close()
-            return data
+            return data[0]
         except:
             self.conn = psycopg2.connect(
                 host=DB.host,
@@ -315,7 +315,7 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             data = self.cursor.fetchall()
             self.cursor.close()
             self.conn.close()
-            return data
+            return data[0]
         
 
     def update_info(self, col, val):
