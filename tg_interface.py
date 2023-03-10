@@ -145,6 +145,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         text = "Список спредов"
         page = context.user_data['current_page']
         buttons = context.user_data.get("menu")[(page)*5:(page)*5+5]
+        add = 0 if len(context.user_data.get('menu'))//5 == len(context.user_data.get('menu'))/5 else 1
         buttons.append([InlineKeyboardButton("<", callback_data="prev"), InlineKeyboardButton(
             f"Refresh {page+1}/{len(context.user_data.get('menu'))//5 + add}", callback_data="refresh_spread"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
