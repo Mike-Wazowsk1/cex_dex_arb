@@ -23,6 +23,7 @@ class ArbitrageManager:
         return perm
 
     def get_common_pairs(self, ex1: str, ex2: str):
+        print(self.db.get_arb_info(db_name=ex1))
         ex1_symbols = np.array(self.db.get_arb_info(db_name=ex1))[:, 0]
         ex2_symbols = np.array(self.db.get_arb_info(db_name=ex2))[:, 0]
         return list(set(ex1_symbols) & set(ex2_symbols))
