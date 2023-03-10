@@ -27,18 +27,20 @@ class ArbitrageManager:
         ex2_symbols = np.array(self.db.get_arb_info(db_name=ex2))[:, 0]
         return list(set(ex1_symbols) & set(ex2_symbols))
 
-    def calc_profit(self, bids, asks, bids_amount, asks_amount,min_amount,max_amount):
-        value = np.minimum.reduce([bids_amount, asks_amount, np.full_like(asks_amount,max_amount)])
+    def calc_profit(self, bids, asks, bids_amount, asks_amount, min_amount, max_amount):
+        value = np.minimum.reduce(
+            [bids_amount, asks_amount, np.full_like(asks_amount, max_amount)])
         profit = bids * value - asks * value
         return profit, value
 
-    def get_profit(self, ex1, ex2,min_amount,max_amount):
+    def get_profit(self, ex1, ex2, min_amount, max_amount):
+        #symbol,asks_price,bids_price, asks_amount,bids_amount,count,timestamp
         symbols = self.get_common_pairs(ex1, ex2)
         ex1_data = np.array(self.db.get_symbols_data(ex1, symbols))
         ex2_data = np.array(self.db.get_symbols_data(ex2, symbols))
 
-        #Symbols
-        symbols = ex1_data[:,0]
+        # Symbols
+        symbols = ex1_data[:, 0]
 
         # Asks avg price
         asks_price_ex1 = ex1_data[:, 1]
@@ -56,20 +58,25 @@ class ArbitrageManager:
         bids_amount_ex1 = ex1_data[:, 4]
         bids_amount_ex2 = ex2_data[:, 4]
 
-        profit, value = self.calc_profit(
-            bids_price_ex2, asks_price_ex1, bids_amount_ex2, asks_amount_ex1,min_amount,max_amount)
-        return symbols, profit, value, bids_price_ex2, asks_price_ex1
+        # Counts
+        count_ex1 = ex1_data[:, 5]
+        count_ex2 = ex2_data[:, 5]
 
-    def main(self,min_amount,max_amount,profit_con):
+        profit, value = self.calc_profit(
+            bids_price_ex2, asks_price_ex1, bids_amount_ex2, asks_amount_ex1, min_amount, max_amount)
+        return symbols, profit, value, bids_price_ex2, asks_price_ex1, count_ex1, count_ex2
+
+    def main(self, min_amount, max_amount, profit_con):
         exs = self.make_exchange_pairs()
         opps = []
         for pair in exs:
             ex1, ex2 = pair
-            symbols, profit, value, bids, asks = self.get_profit(ex1, ex2,min_amount,max_amount)
+            symbols, profit, value, bids, asks, count1, count2 = self.get_profit(
+                ex1, ex2, min_amount, max_amount)
             for i in range(len(profit)):
                 if profit[i] > profit_con and value[i] > min_amount:
                     opps.append([symbols[i], ex1, ex2, asks[i],
-                                bids[i], value[i], profit[i]])
+                                bids[i], value[i], count1[i], count2[i]])
         return opps
 
 

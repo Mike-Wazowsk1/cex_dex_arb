@@ -13,11 +13,10 @@ from binance.streams import ThreadedWebsocketManager
 import requests
 import numpy as np
 from database.db import DataBase
-# Loading keys from config file
 
-# This is not REQUIRED
-# client = Client(actual_api_key, actual_secret_key, tld="com")
+
 db = DataBase()
+
 
 def printer(msg, path):
     """
@@ -33,38 +32,42 @@ def printer(msg, path):
 
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-        numerator = (asks_price * asks_quantity).sum()
-        asks_amount = (asks_quantity).sum()
-        asks_avg_price = numerator/asks_amount
-        if asks_amount == 0:
-            asks_avg_price = 0
-            return 0
-        else:
-            asks_avg_price = numerator/asks_amount
+        user_max_amount = db.get_info_col('max_amount')
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i,val in enumerate(asks_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (asks_price[i] * val) if quantity < user_max_amount else (asks_price[i] * user_max_amount) 
+                count += 1
+        
+        asks_amount = min(quantity,user_max_amount)
+        asks_price = asks_price[:count]
+        asks_avg_price = asks_price/asks_amount
+
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-        numerator = (bids_price * bids_quantity).sum()
-        bids_amount = (bids_quantity).sum()
-        if bids_amount == 0:
-            bids_avg_price = 0
-            return 0
-        else:
-            bids_avg_price = numerator/bids_amount
 
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i,val in enumerate(bids_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (bids_price[i] * val) if quantity < user_max_amount else (bids_price[i] * user_max_amount) 
+                count += 1
         
-        db.update_db(db_name="binance",symbol=symbol.lower(),asks_price=asks_avg_price,bids_price=bids_avg_price,asks_amount=asks_amount,bids_amount=bids_amount,timestamp=int(timestamp))
+        bids_amount = min(quantity,user_max_amount)
+        bids_price = bids_price[:count]
+        bids_avg_price = bids_price/asks_amount
+
+        db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
+                     bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
     except Exception as e:
         print("I'm here")
         print(e)
         print(msg)
-
-    # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
-    #     pkl.dump(bids_avg_price, f)
-    # f.close()
-
-    # with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
-    #     pkl.dump(asks_avg_price, f)
-    # f.close()
 
 
 async def writer(bm, symbol, loop):
@@ -82,15 +85,8 @@ def reciver(client, current_batch, global_dict):
             callback=printer, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
         ss.append(symbol)
     print(f"Len: {len(ss)} {ss[:3]}")
-    # time.sleep(3)
     twm.join()
 
-
-# def proxy(client,current_batch,loop,type='process'):
-#     if type=='process':
-#         asyncio.run(reciver(client,current_batch,loop))
-#     elif type == 'thread':
-#         asyncio.ensure_future(writer(client,current_batch,loop))
 
 def get_snapshot(symbol):
     # base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
@@ -112,33 +108,22 @@ def get_snapshot(symbol):
     #     return 0
     # else:
     #     asks_avg_price = numerator/asks_amount
-    
 
     # bids_price = np.array([float(x[0]) for x in bids[:15]])
     # bids_quantity = np.array([float(x[1]) for x in bids[:15]])
     # numerator = (bids_price * bids_quantity).sum()
     # bids_amount = (bids_quantity).sum()
-    
 
-    
     # if bids_amount == 0:
     #     bids_avg_price = 0
     #     return 0
     # else:
     #     bids_avg_price = numerator/bids_amount
 
-    print("binance",symbol)#,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
-    db.init_snapshot(db_name="binance",symbol=symbol.lower(),asks_price=0,bids_price=0,asks_amount=0,bids_amount=0,timestamp=int(0))
-
-
-    # with open(f"binance_data/{symbol}_bids.pkl", 'wb') as f:
-    #     pkl.dump(bids_avg_price, f)
-    # f.close()
-
-    # with open(f"binance_data/{symbol}_asks.pkl", 'wb') as f:
-    #     pkl.dump(asks_avg_price, f)
-    # f.close()
-
+    # ,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
+    print("binance", symbol)
+    db.init_snapshot(db_name="binance", symbol=symbol.lower(
+    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 
 async def main():
@@ -152,31 +137,13 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
-    # for symbol in symbols:
-    #     get_snapshot(symbol)
     with mp.Pool() as pool:
-        pool.map(get_snapshot,symbols)
+        pool.map(get_snapshot, symbols)
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        # print(current_batch)
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
         time.sleep(300)
-
-        # p.join()
-    # for p in ps:
-        #  p.join()
-
-    # start any sockets here, i.e a trade socket
-    # for symbol in symbols:
-    #     ts = bm.depth_socket(symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-    #     await reciver(ts,symbol)
-
-    # # then start receiving messages
-    # async with ts as tscm:
-    #     while True:
-    #         res = await tscm.recv()
-    #         print(res)
 
     await client.close_connection()
 if __name__ == "__main__":

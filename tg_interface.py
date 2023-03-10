@@ -157,7 +157,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         text = "Список спредов"
         context.user_data['current_page'] = 0
         for i, op in enumerate(opps):
-            symbol, ex1, ex2, ask, bid, value, pr = op
+            symbol, ex1, ex2, ask, bid, value, count1,count2 = op
             if ex1 != 'gate' and ex2 != 'gate':
                 buttons.append([InlineKeyboardButton(
                     text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
@@ -178,7 +178,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     buttons = []
     context.user_data['current_page'] = 0
     for i, op in enumerate(opps):
-        symbol, ex1, ex2, ask, bid, value, pr = op
+        symbol, ex1, ex2, ask, bid, value, count1,count2 = op
         if ex1 != 'gate' and ex2 != 'gate':
             buttons.append([InlineKeyboardButton(
                 text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])

@@ -20,26 +20,40 @@ def handle_orderbook(message):
         asks = data['a'][:15]
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-        numerator = (asks_price * asks_quantity).sum()
-        asks_amount = (asks_quantity).sum()
-        if asks_amount == 0:
-            asks_avg_price = 0
-            return 0
-        else:
-            asks_avg_price = numerator/asks_amount
+        user_max_amount = db.get_info_col('max_amount')
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i, val in enumerate(asks_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
+                    asks_price[i] * user_max_amount)
+                count += 1
+
+        asks_amount = min(quantity, user_max_amount)
+        asks_price = asks_price[:count]
+        asks_avg_price = asks_price/asks_amount
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-        numerator = (bids_price * bids_quantity).sum()
-        bids_amount = (bids_quantity).sum()
-        if bids_amount == 0:
-            bids_avg_price = 0
-            return 0
-        else:
-            bids_avg_price = numerator/bids_amount
+        user_max_amount = db.get_info_col('max_amount')
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i, val in enumerate(bids_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
+                    bids_price[i] * user_max_amount)
+                count += 1
 
-        db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price, bids_price=bids_avg_price,
-                    asks_amount=asks_amount, bids_amount=bids_amount, timestamp=int(timestamp))
+        bids_amount = min(quantity, user_max_amount)
+        bids_price = bids_price[:count]
+        bids_avg_price = bids_price/asks_amount
+
+        db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
+                     bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
     if message['type'] == "snapshot":
         data = message['data']
         symbol = data['s']
@@ -48,36 +62,50 @@ def handle_orderbook(message):
         asks = data['a'][:15]
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-        numerator = (asks_price * asks_quantity).sum()
-        asks_amount = (asks_quantity).sum()
-        if asks_amount == 0:
-            asks_avg_price = 0
-            return 0
-        else:
-            asks_avg_price = numerator/asks_amount
+        user_max_amount = db.get_info_col('max_amount')
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i, val in enumerate(asks_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
+                    asks_price[i] * user_max_amount)
+                count += 1
+
+        asks_amount = min(quantity, user_max_amount)
+        asks_price = asks_price[:count]
+        asks_avg_price = asks_price/asks_amount
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-        numerator = (bids_price * bids_quantity).sum()
-        bids_amount = (bids_quantity).sum()
-        if bids_amount == 0:
-            bids_avg_price = 0
-            return 0
-        else:
-            bids_avg_price = numerator/bids_amount
-        db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price, bids_price=bids_avg_price,
-                    asks_amount=asks_amount, bids_amount=bids_amount, timestamp=int(timestamp))
+        user_max_amount = db.get_info_col('max_amount')
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i, val in enumerate(bids_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
+                    bids_price[i] * user_max_amount)
+                count += 1
 
+        bids_amount = min(quantity, user_max_amount)
+        bids_price = bids_price[:count]
+        bids_avg_price = bids_price/asks_amount
+
+        db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
+                     bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
 
 
 # Similarly, if you want to listen to the WebSockets of other markets:
 ws_spot = spot.WebSocket(testnet=False)
-http  = spot.HTTP()
+http = spot.HTTP()
 symbols = [x['s'] for x in http.get_tickers()['result']['list']]
 print(symbols)
 for symbol in symbols:
     db.init_snapshot(db_name="bybit", symbol=symbol.lower(
-    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, timestamp=int(0))
+    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
@@ -86,7 +114,6 @@ for symbol in symbols:
     except:
         print("can't")
         print(symbol)
-
 
 
 while True:
