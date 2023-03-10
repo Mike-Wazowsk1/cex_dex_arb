@@ -33,9 +33,9 @@ logging.basicConfig(format='%(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 KEYBOARD = Keyboard()
-MIN_USDT = 10
-MIN_AMOUNT = 0
-MAX_AMOUNT = 100
+MIN_USDT = Decimal(10)
+MIN_AMOUNT = Decimal(0)
+MAX_AMOUNT = Decimal(100)
 arb = ArbitrageManager()
 db = DataBase()
 
@@ -204,7 +204,7 @@ async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global MAX_AMOUNT
-    MAX_AMOUNT = float(update.message.text)
+    MAX_AMOUNT = Decimal(update.message.text)
 
 def main() -> None:
     """Start the bot."""
