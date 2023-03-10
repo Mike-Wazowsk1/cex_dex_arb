@@ -236,7 +236,10 @@ async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 
-
+async def ex_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tables = db.get_all_tables()
+    text = f"\n".join(tables)
+    await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 
 
@@ -255,6 +258,8 @@ def main() -> None:
         filters.Regex("(max)"), volume_max))
     application.add_handler(MessageHandler(
         filters.Regex("Список спредов"), spread_list))
+    application.add_handler(MessageHandler(
+            filters.Regex("Биржи"), ex_manager))
     application.add_handler(CallbackQueryHandler(callback_handler))
     application.add_handler(MessageHandler(filters.TEXT, number))
 
