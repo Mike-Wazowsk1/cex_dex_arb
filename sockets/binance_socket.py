@@ -32,7 +32,7 @@ def printer(msg, path):
 
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-        user_max_amount = db.get_info_col('max_amount')
+        user_max_amount = float(db.get_info_col('max_amount'))
         quantity = 0
         count = 0
         mean_price = 0

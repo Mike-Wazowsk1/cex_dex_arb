@@ -62,7 +62,7 @@ def handle_orderbook(message):
         asks = data['a'][:15]
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-        user_max_amount = db.get_info_col('max_amount')
+        user_max_amount = float(db.get_info_col('max_amount'))
         quantity = 0
         count = 0
         mean_price = 0
@@ -79,7 +79,7 @@ def handle_orderbook(message):
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-        user_max_amount = db.get_info_col('max_amount')
+        user_max_amount = float(db.get_info_col('max_amount'))
         quantity = 0
         count = 0
         mean_price = 0
