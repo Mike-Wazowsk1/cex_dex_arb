@@ -203,8 +203,8 @@ async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global MAX_AMOUNT
-    MAX_AMOUNT = Decimal(update.message.text)
+    global MIN_USDT
+    MIN_USDT = Decimal(update.message.text)
 
 def main() -> None:
     """Start the bot."""
