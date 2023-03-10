@@ -145,7 +145,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         await query.edit_message_text(text=text, reply_markup=rep)
     
     if "refresh_spread" in query.data:
-        opps = arb.main()
+        opps = arb.main(MIN_AMOUNT,MAX_AMOUNT,MIN_USDT)
         buttons = []
         text = "Список спредов"
         context.user_data['current_page'] = 0
@@ -165,7 +165,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    opps = arb.main()
+    opps = arb.main(MIN_AMOUNT,MAX_AMOUNT,MIN_USDT)
     buttons = []
     context.user_data['current_page'] = 0
     for i, op in enumerate(opps):
@@ -202,6 +202,9 @@ async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
 """
     await update.message.reply_text(text)
 
+async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global MAX_AMOUNT
+    MAX_AMOUNT = float(update.message.text)
 
 def main() -> None:
     """Start the bot."""
@@ -219,6 +222,7 @@ def main() -> None:
     application.add_handler(MessageHandler(
         filters.Regex("Список спредов"), spread_list))
     application.add_handler(CallbackQueryHandler(callback_handler))
+    application.add_handler(MessageHandler(filters.TEXT,number))
 
     application.run_polling()
 
