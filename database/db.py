@@ -181,7 +181,7 @@ class DataBase:
     def get_all_tables(self):
         q = """
 SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' and table_catalog='cex_dex'
+WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'info'
 """
         try:
             self.conn = psycopg2.connect(
