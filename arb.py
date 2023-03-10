@@ -23,8 +23,6 @@ class ArbitrageManager:
         return perm
 
     def get_common_pairs(self, ex1: str, ex2: str):
-        print(ex1,ex2)
-        print(self.db.get_arb_info(db_name=ex1))
         ex1_symbols = np.array(self.db.get_arb_info(db_name=ex1))[:, 0]
         ex2_symbols = np.array(self.db.get_arb_info(db_name=ex2))[:, 0]
         return list(set(ex1_symbols) & set(ex2_symbols))
@@ -73,12 +71,13 @@ class ArbitrageManager:
         opps = []
         for pair in exs:
             ex1, ex2 = pair
-            symbols, profit, value, bids, asks, count1, count2 = self.get_profit(
-                ex1, ex2, min_amount, max_amount)
-            for i in range(len(profit)):
-                if profit[i] > profit_con and value[i] > min_amount:
-                    opps.append([symbols[i], ex1, ex2, asks[i],
-                                bids[i], value[i], count1[i], count2[i]])
+            if ex1 !='gate' and ex2!='gate':
+                symbols, profit, value, bids, asks, count1, count2 = self.get_profit(
+                    ex1, ex2, min_amount, max_amount)
+                for i in range(len(profit)):
+                    if profit[i] > profit_con and value[i] > min_amount:
+                        opps.append([symbols[i], ex1, ex2, asks[i],
+                                    bids[i], value[i], count1[i], count2[i]])
         return opps
 
 
