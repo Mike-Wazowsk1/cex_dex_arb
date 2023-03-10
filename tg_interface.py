@@ -36,6 +36,7 @@ KEYBOARD = Keyboard()
 MIN_USDT = Decimal(10)
 MIN_AMOUNT = Decimal(0)
 MAX_AMOUNT = Decimal(100)
+STATE = 0
 arb = ArbitrageManager()
 db = DataBase()
 
@@ -51,12 +52,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def monitoring(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global STATE
     text = f"""
 Установлено значение: {MIN_USDT}$
 Если хотите изменить его,введите желаемую прибыль со сделки (в USDT).
 Когда появится спред с прибылью не меньше указанной, я пришлю вам сообщение!
     (пример: 10.5)
 Если хотите отключить поиск, напишите 0."""
+    STATE = 0
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 
@@ -106,9 +109,10 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 \|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
 
 Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
-        button = [[InlineKeyboardButton(text='Назад',callback_data='back_spread')]]
+        button = [[InlineKeyboardButton(
+            text='Назад', callback_data='back_spread')]]
         rep = InlineKeyboardMarkup(button)
-        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2,reply_markup=rep)
+        await query.edit_message_text(text=text, parse_mode=ParseMode.MARKDOWN_V2, reply_markup=rep)
 
     if "prev" in query.data:
         text = "Список спредов"
@@ -143,9 +147,9 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
             "Refresh", callback_data="refresh_spread"), InlineKeyboardButton(">", callback_data="next")])
         rep = InlineKeyboardMarkup(buttons)
         await query.edit_message_text(text=text, reply_markup=rep)
-    
+
     if "refresh_spread" in query.data:
-        opps = arb.main(MIN_AMOUNT,MAX_AMOUNT,MIN_USDT)
+        opps = arb.main(MIN_AMOUNT, MAX_AMOUNT, MIN_USDT)
         buttons = []
         text = "Список спредов"
         context.user_data['current_page'] = 0
@@ -165,7 +169,7 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
 
 
 async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    opps = arb.main(MIN_AMOUNT,MAX_AMOUNT,MIN_USDT)
+    opps = arb.main(MIN_AMOUNT, MAX_AMOUNT, MIN_USDT)
     buttons = []
     context.user_data['current_page'] = 0
     for i, op in enumerate(opps):
@@ -184,27 +188,52 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def volume_min(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global STATE
+
     text = f"""
 Установлен минимальный обьем: {MIN_AMOUNT}$
 Если хотите изменить значение,введите желаемый объем (в USDT).
 Все спреды будут появляться с объемами не менее указанного!
     (пример 100.5)
 """
+    STATE = 1
     await update.message.reply_text(text)
 
 
 async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global STATE
     text = f"""
 Установлен максимальный обьем: {MAX_AMOUNT}$
 Если хотите изменить значение,введите желаемый объем (в USDT).
 Все спреды будут появляться с объемами не более указанного!
     (пример 100.5)
 """
+    STATE = 2
     await update.message.reply_text(text)
 
+
 async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global MIN_USDT
-    MIN_USDT = Decimal(update.message.text)
+    global STATE, MIN_USDT, MIN_AMOUNT, MAX_AMOUNT
+    try:
+        text = "Значение успешно применено"
+        if STATE == 0:
+            MIN_USDT = Decimal(update.message.text)
+            STATE = None
+        if STATE == 1:
+            MIN_AMOUNT = Decimal(update.message.text)
+            STATE = None
+        if STATE == 2:
+            MAX_AMOUNT = Decimal(update.message.text)
+            STATE = None
+        await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
+    except Exception as e:
+        text = f"Ошибка: {e}"
+        await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
+
+
+
+
+
 
 def main() -> None:
     """Start the bot."""
@@ -222,7 +251,7 @@ def main() -> None:
     application.add_handler(MessageHandler(
         filters.Regex("Список спредов"), spread_list))
     application.add_handler(CallbackQueryHandler(callback_handler))
-    application.add_handler(MessageHandler(filters.TEXT,number))
+    application.add_handler(MessageHandler(filters.TEXT, number))
 
     application.run_polling()
 
