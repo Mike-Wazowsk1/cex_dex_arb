@@ -71,7 +71,6 @@ async def writer(bm, symbol, loop):
     print(symbol)
     bm.start_depth_socket(callback=printer, symbol=symbol,
                           depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-    time.sleep(0.1)
 
 
 def reciver(client, current_batch, global_dict):
@@ -149,7 +148,7 @@ async def main():
     info = await client.get_exchange_info()
     symbols = [x['symbol'] for x in info['symbols']]
     symbols = [x for x in set(symbols)]
-    batch_size = ceil(50)
+    batch_size = ceil(300)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
@@ -161,6 +160,7 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # print(current_batch)
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
+        time.sleep(300)
         p.start()
         # p.join()
     # for p in ps:
