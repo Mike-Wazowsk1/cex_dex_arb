@@ -61,7 +61,8 @@ def printer(msg, path):
     bids_amount = min(quantity,user_max_amount)
     bids_price = bids_price[:count]
     bids_avg_price = bids_price/asks_amount
-
+    print(symbol.lower(), asks_avg_price,
+                    bids_avg_price, asks_amount, bids_amount, count, int(timestamp))
     db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
                     bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
 # except Exception as e:
