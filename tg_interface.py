@@ -238,8 +238,8 @@ async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def ex_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tables = list(db.get_all_tables())
-    tabels = [x[0] for x in tables]
-
+    tables = [str(x[0]) for x in tables]
+    print(tables)
     text = f"\n".join(tables)
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
