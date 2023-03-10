@@ -43,8 +43,7 @@ def printer(msg, path):
                 count += 1
         
         asks_amount = min(quantity,user_max_amount)
-        asks_price = asks_price[:count]
-        asks_avg_price = sum(asks_price)/asks_amount
+        asks_avg_price = mean_price/asks_amount
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
@@ -59,8 +58,7 @@ def printer(msg, path):
                 count += 1
         
         bids_amount = min(quantity,user_max_amount)
-        bids_price = bids_price[:count]
-        bids_avg_price = sum(bids_price)/asks_amount
+        bids_avg_price = mean_price/bids_amount
 
         db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
                         bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
