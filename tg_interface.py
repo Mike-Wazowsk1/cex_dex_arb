@@ -97,9 +97,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         data = query.data.split("_")[2:]
         ex1, ex2, symbol, value = data
         # value = 0
-        asks_price1, bids_price1, asks_amount1, bids_amount1, timestamp1 = db.get_from_db(
+        asks_price1, bids_price1, asks_amount1, bids_amount1,count1, timestamp1 = db.get_from_db(
             ex1, symbol)[0]
-        asks_price2, bids_price2, asks_amount2, bids_amount2, timestamp2 = db.get_from_db(
+        asks_price2, bids_price2, asks_amount2, bids_amount2,count2, timestamp2 = db.get_from_db(
             ex2, symbol)[0]
 
         text = f"""
