@@ -23,52 +23,51 @@ def printer(msg, path):
     Function to process the received messages
     param msg: input message
     """
-    # try:
-    symbol = path.split("@")[0]
-    timestamp = msg['lastUpdateId']
+    try:
+        symbol = path.split("@")[0]
+        timestamp = msg['lastUpdateId']
 
-    asks = msg['asks']
-    bids = msg['bids']
+        asks = msg['asks']
+        bids = msg['bids']
 
-    asks_price = np.array([float(x[0]) for x in asks[:15]])
-    asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-    user_max_amount = float(db.get_info_col('max_amount'))
-    quantity = 0
-    count = 0
-    mean_price = 0
-    for i,val in enumerate(asks_quantity):
-        if quantity < user_max_amount:
-            quantity += val
-            mean_price += (asks_price[i] * val) if quantity < user_max_amount else (asks_price[i] * user_max_amount) 
-            count += 1
-    
-    asks_amount = min(quantity,user_max_amount)
-    asks_price = asks_price[:count]
-    asks_avg_price = sum(asks_price)/asks_amount
+        asks_price = np.array([float(x[0]) for x in asks[:15]])
+        asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+        user_max_amount = float(db.get_info_col('max_amount'))
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i,val in enumerate(asks_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (asks_price[i] * val) if quantity < user_max_amount else (asks_price[i] * user_max_amount) 
+                count += 1
+        
+        asks_amount = min(quantity,user_max_amount)
+        asks_price = asks_price[:count]
+        asks_avg_price = sum(asks_price)/asks_amount
 
-    bids_price = np.array([float(x[0]) for x in bids[:15]])
-    bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+        bids_price = np.array([float(x[0]) for x in bids[:15]])
+        bids_quantity = np.array([float(x[1]) for x in bids[:15]])
 
-    quantity = 0
-    count = 0
-    mean_price = 0
-    for i,val in enumerate(bids_quantity):
-        if quantity < user_max_amount:
-            quantity += val
-            mean_price += (bids_price[i] * val) if quantity < user_max_amount else (bids_price[i] * user_max_amount) 
-            count += 1
-    
-    bids_amount = min(quantity,user_max_amount)
-    bids_price = bids_price[:count]
-    bids_avg_price = sum(bids_price)/asks_amount
-    print(symbol.lower(), asks_avg_price,
-                    bids_avg_price, asks_amount, bids_amount, count, int(timestamp))
-    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
-                    bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
-# except Exception as e:
-    #     print("I'm here")
-    #     print(e)
-    #     print(msg)
+        quantity = 0
+        count = 0
+        mean_price = 0
+        for i,val in enumerate(bids_quantity):
+            if quantity < user_max_amount:
+                quantity += val
+                mean_price += (bids_price[i] * val) if quantity < user_max_amount else (bids_price[i] * user_max_amount) 
+                count += 1
+        
+        bids_amount = min(quantity,user_max_amount)
+        bids_price = bids_price[:count]
+        bids_avg_price = sum(bids_price)/asks_amount
+
+        db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
+                        bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
+    except Exception as e:
+            print("I'm here")
+            print(e)
+            print(msg)
 
 
 async def writer(bm, symbol, loop):
