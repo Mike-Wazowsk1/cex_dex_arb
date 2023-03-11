@@ -248,7 +248,7 @@ async def ex_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def get_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tic, ex = update.message.text.split()[1:]
     data = db.get_command(tic,ex)
-    text = data
+    text = str(data)
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 def main() -> None:
