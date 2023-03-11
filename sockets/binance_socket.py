@@ -31,6 +31,7 @@ symbols = [x for x in set(symbols)]
 
 
 def init_snapshot(symbol):
+    print("REST request")
     """
     Retrieve order book
     """
@@ -175,7 +176,7 @@ def reciver(client, current_batch, global_dict):
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
-        # print(manager)
+        time.sleep(1)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
         # time.sleep(30)
