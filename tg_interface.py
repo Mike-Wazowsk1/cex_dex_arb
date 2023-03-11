@@ -26,6 +26,7 @@ from keyboards import Keyboard
 from uuid import uuid4
 from arb import ArbitrageManager
 import requests
+import datetime
 from decimal import Decimal
 API = "6191286786:AAHc2hvpRBkR0TSDS1dJmsUpPTegq5Wm_qE"
 
@@ -247,8 +248,10 @@ async def ex_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def get_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tic, ex = update.message.text.split()[1:]
-    data = db.get_command(tic,ex)
+    data = db.get_command(tic,ex)[0]
     text = str(data)
+    
+    text += " " + datetime.datetime.fromtimestamp(data[3])
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 def main() -> None:
