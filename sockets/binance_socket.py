@@ -102,7 +102,11 @@ def message_handler(message, path):
         printer(asks, bids, symbol)
     except Exception as e:
         print(e)
+        if "lastUpdateId" in str(e):
+            print(manager[symbol.lower()])
+
         print(f"ERROR SYMBOL: {symbol}")
+
         time.sleep(5)
 
 
