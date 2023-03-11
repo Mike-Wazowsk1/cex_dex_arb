@@ -171,7 +171,7 @@ def reciver(client, current_batch, global_dict):
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
-        print(manager[symbol.lower()])
+        print(manager)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
         print(symbol)
