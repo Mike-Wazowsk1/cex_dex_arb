@@ -119,12 +119,12 @@ def printer(asks, bids, symbol):
         for i, val in enumerate(asks_quantity):
             if usdt_quantity < user_max_amount:
                 quantity += val
-                mean_price += asks_price[i] * val
+                mean_price += asks_price[i]
                 usdt_quantity += quantity * asks_price[i]
                 count += 1
 
         asks_amount = quantity
-        asks_avg_price = mean_price/asks_amount
+        asks_avg_price = mean_price/count
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
@@ -136,13 +136,13 @@ def printer(asks, bids, symbol):
         for i, val in enumerate(bids_quantity):
             if usdt_quantity < user_max_amount:
                 quantity += val
-                mean_price += bids_price[i] * val
+                mean_price += bids_price[i]
                 usdt_quantity += quantity * bids_price[i]
                 count += 1
 
         bids_amount = quantity
         timestamp = time.time()
-        bids_avg_price = mean_price/bids_amount
+        bids_avg_price = mean_price/count
 
         db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
                      bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
