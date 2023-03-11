@@ -124,6 +124,7 @@ def to_db(asks, bids, symbol):
 def message_handler(message, path):
     global order_book, symbols
     symbol = path.split("@")[0]
+    print(symbol)
 
     if "depthUpdate" in json.dumps(message):
         last_update_id = order_book['lastUpdateId']
@@ -197,7 +198,6 @@ def printer(msg, path):
 
 
 async def writer(bm, symbol, loop):
-    print(symbol)
     bm.start_depth_socket(callback=message_handler, symbol=symbol,
                           depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
 
@@ -247,7 +247,6 @@ def get_init(symbol):
     #     bids_avg_price = numerator/bids_amount
 
     # ,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
-    print("binance", symbol)
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
