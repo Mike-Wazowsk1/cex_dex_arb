@@ -36,12 +36,12 @@ def printer(msg, path):
         quantity = 0
         count = 0
         mean_price = 0
-        prev_quantity = 0
+        usdt_quantity = 0
         for i, val in enumerate(asks_quantity):
-            if quantity < user_max_amount:
-                quantity += asks_price[i] * val
-                mean_price += asks_price[i] * (asks_price[i] * val)
-                prev_quantity = quantity
+            if usdt_quantity < user_max_amount:
+                quantity += val
+                mean_price += (asks_price[i] * val)
+                usdt_quantity += quantity * asks_price[i]
                 count += 1
 
         asks_amount = min(quantity, user_max_amount)
@@ -53,12 +53,12 @@ def printer(msg, path):
         quantity = 0
         count = 0
         mean_price = 0
-        prev_quantity = 0
+        usdt_quantity = 0
         for i, val in enumerate(bids_quantity):
-            if quantity < user_max_amount:
-                quantity += bids_price[i] * val
-                mean_price += bids_price[i] * (bids_price[i] * val)
-                prev_quantity = quantity
+            if usdt_quantity < user_max_amount:
+                quantity += val
+                mean_price += (bids_price[i] * val)
+                usdt_quantity += quantity * bids_price[i]
                 count += 1
 
         bids_amount = min(quantity, user_max_amount)
