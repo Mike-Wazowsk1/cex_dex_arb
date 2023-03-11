@@ -83,29 +83,17 @@ def process_updates(message, symbol):
 def message_handler(message, path):
     global order_book, manager
     symbol = path.split("@")[0]
-    print(symbol)
-    print(manager[symbol.lower()]['lastUpdateId'])
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
             if message['u'] <= last_update_id:
-                print("u< last")
-                print(manager[symbol.lower()]['lastUpdateId'])
                 return  
             if message['U'] <= last_update_id + 1 <= message['u']:
-                print("u > last+1")
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                print(manager[symbol.lower()]['lastUpdateId'])
                 process_updates(message,symbol)
-                print(manager[symbol.lower()]['lastUpdateId'])
             else:
-                print("resync")
                 print('Out of sync, re-syncing...')
-                print(manager[symbol.lower()]['lastUpdateId'])
-                print(symbol)
-                print(init_snapshot(symbol.upper()))
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
-                print(manager[symbol.lower()]['lastUpdateId'])
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
@@ -114,8 +102,6 @@ def message_handler(message, path):
         printer(asks, bids, symbol)
     except Exception as e:
         print(e)
-        if manager[symbol.lower()] == None:
-            print(manager)
         print(f"ERROR SYMBOL: {symbol}")
         time.sleep(5)
 
@@ -185,8 +171,7 @@ def reciver(client, current_batch, global_dict):
         # print(manager)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
-        print(symbol)
-        time.sleep(30)
+        # time.sleep(30)
     twm.join()
 
 
@@ -223,7 +208,6 @@ def get_snapshot(symbol):
     #     bids_avg_price = numerator/bids_amount
 
     # ,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
-    print("binance", symbol)
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
