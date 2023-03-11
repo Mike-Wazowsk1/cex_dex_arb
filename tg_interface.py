@@ -245,7 +245,11 @@ async def ex_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = f"\n".join(tables)
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
-
+async def get_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tic, ex = update.message.text.split()[1:]
+    data = db.get_command(tic,ex)
+    text = data
+    await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 def main() -> None:
     """Start the bot."""
@@ -254,6 +258,8 @@ def main() -> None:
 
     application.add_handler(CommandHandler('ave', ave_me))
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('db', get_db))
+
     application.add_handler(MessageHandler(
         filters.Regex("Мониторинг"), monitoring))
     application.add_handler(MessageHandler(
