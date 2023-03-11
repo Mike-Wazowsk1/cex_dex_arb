@@ -82,22 +82,28 @@ def process_updates(message, symbol):
 
 def message_handler(message, path):
     global order_book, manager
-    print(manager)
+    symbol = path.split("@")[0]
+
+    print(manager[symbol.lower()]['lastUpdateId'])
     try:
-        symbol = path.split("@")[0]
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
             if message['u'] <= last_update_id:
+                print("u< last")
+                print(manager[symbol.lower()]['lastUpdateId'])
                 return  
             if message['U'] <= last_update_id + 1 <= message['u']:
+                print("u > last+1")
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                print(manager)
-
+                print(manager[symbol.lower()]['lastUpdateId'])
                 process_updates(message,symbol)
-                print(manager)
+                print(manager[symbol.lower()]['lastUpdateId'])
             else:
-                logging.info('Out of sync, re-syncing...')
+                print("resync")
+                print('Out of sync, re-syncing...')
+                print(manager[symbol.lower()]['lastUpdateId'])
                 manager[symbol.lower()] = get_snapshot(symbol)
+                print(manager[symbol.lower()]['lastUpdateId'])
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
