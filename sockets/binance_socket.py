@@ -109,8 +109,6 @@ def printer(asks, bids,symbol):
     param msg: input message
     """
     try:
-        print(asks)
-        asks = sorted(asks)
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         user_max_amount = float(db.get_info_col('max_amount'))
@@ -128,7 +126,6 @@ def printer(asks, bids,symbol):
         asks_amount = quantity
         asks_avg_price = mean_price/asks_amount
 
-        bids = sorted(bids,reverse=True)
         bids_price = np.array([float(x[0]) for x in bids[:15]])
         bids_quantity = np.array([float(x[1]) for x in bids[:15]])
 
