@@ -24,6 +24,7 @@ def printer(msg, path):
     param msg: input message
     """
     try:
+        print(msg)
         symbol = path.split("@")[0]
         timestamp = msg['lastUpdateId']
 
