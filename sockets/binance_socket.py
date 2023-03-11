@@ -103,6 +103,7 @@ def message_handler(message, path):
                 print('Out of sync, re-syncing...')
                 print(manager[symbol.lower()]['lastUpdateId'])
                 print(symbol)
+                print(init_snapshot(symbol))
                 manager[symbol.lower()] = init_snapshot(symbol)
                 print(manager[symbol.lower()]['lastUpdateId'])
 
