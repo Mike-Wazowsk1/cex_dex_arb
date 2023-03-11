@@ -33,12 +33,12 @@ def init_snapshot(symbol):
     """
     Retrieve order book
     """
-    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
+    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
     return msg
 
 
-def manage_order_book(side, update,symbol):
+def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
@@ -70,17 +70,18 @@ def manage_order_book(side, update,symbol):
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
-def process_updates(message,symbol):
+def process_updates(message, symbol):
     start = time.time()
 
     for update in message['bids']:
-        manage_order_book('bids', update,symbol)
+        manage_order_book('bids', update, symbol)
+
     for update in message['asks']:
-        manage_order_book('asks', update,symbol)
+        manage_order_book('asks', update, symbol)
     now = time.time()
 
 
-def message_handler(message,path):
+def message_handler(message, path):
     global order_book, manager
     symbol = path.split("@")[0]
     print(symbol)
@@ -90,20 +91,19 @@ def message_handler(message,path):
         return
     if last_update_id + 1 <= message['lastUpdateId']:
         manager[symbol.lower()]['lastUpdateId'] = message['lastUpdateId']
-        process_updates(message,symbol)
+        process_updates(message, symbol)
     else:
         logging.info('Out of sync, re-syncing...')
         manager[symbol.lower()] = get_snapshot(symbol)
 
-    asks =  np.array(sorted(
-                manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
+    asks = np.array(sorted(
+        manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
     bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-                x[0]), reverse=True))
-    printer(asks,bids,symbol)
+        x[0]), reverse=True))
+    printer(asks, bids, symbol)
 
 
-
-def printer(asks, bids,symbol):
+def printer(asks, bids, symbol):
     """
     Function to process the received messages
     param msg: input message
@@ -149,7 +149,6 @@ def printer(asks, bids,symbol):
     except Exception as e:
         print("I'm here")
         print(e)
-
 
 
 async def writer(bm, symbol, loop):
