@@ -215,7 +215,7 @@ def reciver(client, current_batch, global_dict):
 
 
 def get_init(symbol):
-    global tmp
+    global tmp,order_book
     # base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     # msg = requests.get(base_url).json()
     # try:
