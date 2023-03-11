@@ -96,6 +96,7 @@ def message_handler(message, path):
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
+                last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 time.sleep(1)
 
