@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 from binance import AsyncClient, BinanceSocketManager
 from binance import ThreadedWebsocketManager
@@ -71,10 +72,10 @@ def manage_order_book(side, update, symbol):
 def process_updates(message, symbol):
     start = time.time()
 
-    for update in message['bids']:
+    for update in message['b']:
         manage_order_book('bids', update, symbol)
 
-    for update in message['asks']:
+    for update in message['a']:
         manage_order_book('asks', update, symbol)
     now = time.time()
 
@@ -82,17 +83,16 @@ def process_updates(message, symbol):
 def message_handler(message, path):
     global order_book, manager
     symbol = path.split("@")[0]
-    print(message)
-
-    last_update_id = manager[symbol.lower()]['lastUpdateId']
-    if message['lastUpdateId'] <= last_update_id:
-        return
-    if last_update_id + 1 <= message['lastUpdateId']:
-        manager[symbol.lower()]['lastUpdateId'] = message['lastUpdateId']
-        process_updates(message, symbol)
-    else:
-        logging.info('Out of sync, re-syncing...')
-        manager[symbol.lower()] = get_snapshot(symbol)
+    if "depthUpdate" in json.dumps(message):
+        last_update_id = manager[symbol.lower()]['lastUpdateId']
+        if message['u'] <= last_update_id:
+            return  
+        if message['U'] <= last_update_id + 1 <= message['u']:
+            manager[symbol.lower()]['lastUpdateId'] = message['u']
+            process_updates(message,symbol)
+        else:
+            logging.info('Out of sync, re-syncing...')
+            manager[symbol.lower()] = get_snapshot(symbol)
 
     asks = np.array(sorted(
         manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
@@ -153,9 +153,7 @@ def printer(asks, bids, symbol):
 
 
 async def writer(bm, symbol, loop):
-    print(symbol)
-    bm.start_depth_socket(callback=message_handler, symbol=symbol,
-                          depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
+    bm.start_depth_socket(callback=message_handler, symbol=symbol)
 
 
 def reciver(client, current_batch, global_dict):
@@ -166,7 +164,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
         twm.start_depth_socket(
-            callback=message_handler, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
+            callback=message_handler, symbol=symbol)
     twm.join()
 
 
