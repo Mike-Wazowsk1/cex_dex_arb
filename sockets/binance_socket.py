@@ -124,9 +124,10 @@ def to_db(asks, bids, symbol):
 def message_handler(message, path):
     global order_book, symbols
     symbol = path.split("@")[0]
+    # print(message)
     
 
-    if "depthUpdate" in json.dumps(message):
+    if "depthUpdate" in message['e']:
         print(symbol)
         last_update_id = order_book['lastUpdateId']
         if message['u'] <= last_update_id:
