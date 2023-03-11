@@ -140,8 +140,8 @@ def message_handler(message, path):
         for symbol in symbols:
             order_book = get_snapshot(symbol)
 
-    bids = np.array(order_book['bids'])[:15]
-    asks = np.array(order_book['asks'])[:15]
+    bids = np.array(sorted(order_book['bids'], key=lambda x: float(x[0]), reverse=True))[:15]
+    asks = np.array(sorted(order_book['asks'], key=lambda x: float(x[0])))[:15]
     to_db(asks, bids, symbol)
 
 
