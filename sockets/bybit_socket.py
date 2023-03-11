@@ -12,8 +12,6 @@ db = DataBase()
 
 
 def handle_orderbook(message):
-    print(message)
-
     if message['type'] == 'data':
         data = message['data']
         symbol = data['s']
@@ -30,7 +28,7 @@ def handle_orderbook(message):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
-                    asks_price[i] * user_max_amount)
+                    asks_price[i] * (quantity-user_max_amount))
                 count += 1
 
         asks_amount = min(quantity, user_max_amount)
@@ -46,7 +44,7 @@ def handle_orderbook(message):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
-                    bids_price[i] * user_max_amount)
+                    bids_price[i] * (quantity-user_max_amount))
                 count += 1
 
         bids_amount = min(quantity, user_max_amount)
@@ -54,6 +52,7 @@ def handle_orderbook(message):
 
         db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
                      bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
+        
     if message['type'] == "snapshot":
         data = message['data']
         symbol = data['s']
@@ -70,7 +69,7 @@ def handle_orderbook(message):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
-                    asks_price[i] * user_max_amount)
+                    asks_price[i] * (quantity-user_max_amount))
                 count += 1
 
         asks_amount = min(quantity, user_max_amount)
@@ -86,7 +85,7 @@ def handle_orderbook(message):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
-                    bids_price[i] * user_max_amount)
+                    bids_price[i] * (quantity-user_max_amount))
                 count += 1
 
         bids_amount = min(quantity, user_max_amount)
