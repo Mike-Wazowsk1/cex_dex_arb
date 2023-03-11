@@ -47,7 +47,7 @@ def manage_order_book(side, update, symbol):
     for i in range(0, len(manager[symbol.lower()][side])):
         if price == manager[symbol.lower()][side][i][0]:
             # quantity is 0: remove
-            if float(quantity) == 0:
+            if float(quantity) <= 0.01:
                 manager[symbol.lower()][side].pop(i)
                 return
             else:
