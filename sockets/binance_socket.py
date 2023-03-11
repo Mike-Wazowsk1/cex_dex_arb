@@ -82,23 +82,30 @@ def process_updates(message, symbol):
 
 def message_handler(message, path):
     global order_book, manager
-    symbol = path.split("@")[0]
-    if "depthUpdate" in json.dumps(message):
-        last_update_id = manager[symbol.lower()]['lastUpdateId']
-        if message['u'] <= last_update_id:
-            return  
-        if message['U'] <= last_update_id + 1 <= message['u']:
-            manager[symbol.lower()]['lastUpdateId'] = message['u']
-            process_updates(message,symbol)
-        else:
-            logging.info('Out of sync, re-syncing...')
-            manager[symbol.lower()] = get_snapshot(symbol)
+    try:
+        symbol = path.split("@")[0]
+        if "depthUpdate" in json.dumps(message):
+            last_update_id = manager[symbol.lower()]['lastUpdateId']
+            if message['u'] <= last_update_id:
+                return  
+            if message['U'] <= last_update_id + 1 <= message['u']:
+                manager[symbol.lower()]['lastUpdateId'] = message['u']
+                process_updates(message,symbol)
+            else:
+                logging.info('Out of sync, re-syncing...')
+                manager[symbol.lower()] = get_snapshot(symbol)
 
-    asks = np.array(sorted(
-        manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
-    bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-        x[0]), reverse=True))
-    printer(asks, bids, symbol)
+        asks = np.array(sorted(
+            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
+        bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+            x[0]), reverse=True))
+        printer(asks, bids, symbol)
+    except Exception as e:
+        print(e)
+        print(manager[symbol.lower()])
+        print(f"ERROR SYMBOL: {symbol}")
+        time.sleep(5)
+
 
 
 def printer(asks, bids, symbol):
