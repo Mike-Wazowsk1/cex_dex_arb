@@ -228,8 +228,9 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
-    with mp.Pool() as pool:
-        pool.map(get_init, symbols)
+    for symbol in symbols:
+        get_init(symbol)
+
     print(tmp)
     time.sleep(10)
 
