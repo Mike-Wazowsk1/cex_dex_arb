@@ -102,7 +102,7 @@ def message_handler(message, path):
                 print("resync")
                 print('Out of sync, re-syncing...')
                 print(manager[symbol.lower()]['lastUpdateId'])
-                manager[symbol.lower()] = get_snapshot(symbol)
+                manager[symbol.lower()] = init_snapshot(symbol)
                 print(manager[symbol.lower()]['lastUpdateId'])
 
         asks = np.array(sorted(
