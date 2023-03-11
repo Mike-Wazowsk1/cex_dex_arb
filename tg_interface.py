@@ -93,6 +93,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if 'ex' in query.data and "next" not in query.data and "prev" not in query.data:
         data = query.data.split("_")[2:]
         ex1, ex2, symbol, value = data
+        value = min(value,db.get_info_col('max_amount'))
+
         # value = 0
         asks_price1, bids_price1, asks_amount1, bids_amount1,count1, timestamp1 = db.get_from_db(
             ex1, symbol)[0]
@@ -155,6 +157,8 @@ Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).rep
         context.user_data['current_page'] = 0
         for i, op in enumerate(opps):
             symbol, ex1, ex2, ask, bid, value, count1,count2 = op
+        value = min(value,db.get_info_col('max_amount'))
+
             if ex1 != 'gate' and ex2 != 'gate':
                 buttons.append([InlineKeyboardButton(
                     text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
@@ -176,6 +180,7 @@ async def spread_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['current_page'] = 0
     for i, op in enumerate(opps):
         symbol, ex1, ex2, ask, bid, value, count1,count2 = op
+        value = min(value,db.get_info_col('max_amount'))
         if ex1 != 'gate' and ex2 != 'gate':
             buttons.append([InlineKeyboardButton(
                 text=f"{symbol.upper()}: {round(ask*value)} -> {round(bid*value)}", callback_data=f'{i//5}_ex_{ex1}_{ex2}_{symbol}_{round(value)}')])
