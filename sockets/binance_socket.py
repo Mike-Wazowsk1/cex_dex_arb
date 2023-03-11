@@ -12,7 +12,6 @@ import time
 from binance.client import Client
 import configparser
 from binance.streams import ThreadedWebsocketManager
-from pandas import Timestamp
 import requests
 import numpy as np
 from database.db import DataBase
