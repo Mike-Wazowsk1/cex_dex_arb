@@ -27,7 +27,8 @@ def handle_orderbook(message):
         prev_quantity = 0
         for i, val in enumerate(asks_quantity):
             if quantity < user_max_amount:
-                quantity += asks_price[i] * val
+                quantity += asks_price[i] * val if quantity + asks_price[i] * \
+                    val <= user_max_amount else asks_price[i] * (user_max_amount - prev_quantity)
                 mean_price += asks_price[i] * (asks_price[i] * val) if quantity < user_max_amount else (
                     asks_price[i] * asks_price[i] * (user_max_amount - prev_quantity))
                 prev_quantity = quantity
@@ -45,7 +46,8 @@ def handle_orderbook(message):
         prev_quantity = 0
         for i, val in enumerate(bids_quantity):
             if quantity < user_max_amount:
-                quantity += bids_price[i] * val
+                quantity += bids_price[i] * val if quantity + bids_price[i] * \
+                    val <= user_max_amount else bids_price[i] * (user_max_amount - prev_quantity)
                 mean_price += bids_price[i] * (bids_price[i] * val) if quantity < user_max_amount else (
                     bids_price[i] * bids_price[i] * (user_max_amount - prev_quantity))
                 prev_quantity = quantity
@@ -66,7 +68,7 @@ def handle_orderbook(message):
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         user_max_amount = float(db.get_info_col('max_amount'))
 
-        
+
         quantity = 0
         count = 0
         mean_price = 0
@@ -74,7 +76,8 @@ def handle_orderbook(message):
 
         for i, val in enumerate(asks_quantity):
             if quantity < user_max_amount:
-                quantity += asks_price[i] * val
+                quantity += asks_price[i] * val if quantity + asks_price[i] * \
+                    val <= user_max_amount else asks_price[i] * (user_max_amount - prev_quantity)
                 mean_price += asks_price[i] * (asks_price[i] * val) if quantity < user_max_amount else (
                     asks_price[i] * asks_price[i] * (user_max_amount - prev_quantity))
                 prev_quantity = quantity
@@ -92,7 +95,8 @@ def handle_orderbook(message):
         prev_quantity = 0
         for i, val in enumerate(bids_quantity):
             if quantity < user_max_amount:
-                quantity += bids_price[i] * val
+                quantity += bids_price[i] * val if quantity + bids_price[i] * \
+                    val <= user_max_amount else bids_price[i] * (user_max_amount - prev_quantity)
                 mean_price += bids_price[i] * (bids_price[i] * val) if quantity < user_max_amount else (
                     bids_price[i] * bids_price[i] * (user_max_amount - prev_quantity))
                 prev_quantity = quantity

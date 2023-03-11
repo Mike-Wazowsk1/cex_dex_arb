@@ -33,9 +33,6 @@ logging.basicConfig(format='%(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 KEYBOARD = Keyboard()
-MIN_USDT = Decimal(10)
-MIN_AMOUNT = Decimal(0)
-MAX_AMOUNT = Decimal(100)
 STATE = 0
 arb = ArbitrageManager()
 db = DataBase()
@@ -219,7 +216,7 @@ async def volume_max(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def number(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global STATE, MIN_USDT, MIN_AMOUNT, MAX_AMOUNT
+    global STATE
     try:
         text = "Значение успешно применено"
         if STATE == 0:
