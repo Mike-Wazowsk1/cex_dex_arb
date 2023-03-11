@@ -92,7 +92,7 @@ def message_handler(message, path):
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
                 process_updates(message,symbol)
             else:
-                print('Out of sync, re-syncing...')
+                print(f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
 
         asks = np.array(sorted(
