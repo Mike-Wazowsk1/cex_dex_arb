@@ -83,9 +83,9 @@ def message_handler(message,path):
     symbol = path.split("@")[0]
 
     last_update_id = manager[symbol.lower()]['lastUpdateId']
-    if message['u'] <= last_update_id:
+    if message['lastUpdateId'] <= last_update_id:
         return
-    if message['U'] <= last_update_id + 1 <= message['u']:
+    if last_update_id + 1 <= message['lastUpdateId']:
         manager[symbol.lower()]['lastUpdateId'] = message['u']
         process_updates(message,symbol)
     else:
