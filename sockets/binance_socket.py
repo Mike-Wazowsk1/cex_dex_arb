@@ -167,7 +167,6 @@ async def writer(bm, symbol, loop):
 def reciver(client, current_batch, global_dict):
     global manager
     twm = ThreadedWebsocketManager()
-    manager = {}
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
@@ -219,6 +218,8 @@ def get_snapshot(symbol):
 
 async def main():
     global loop
+    manager = {}
+
     client = Client()
 
     batch_size = ceil(300)
