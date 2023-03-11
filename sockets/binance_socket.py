@@ -24,7 +24,7 @@ order_book = {
     "bids": [],
     "asks": []
 }
-tmp = {}
+
 base_url = 'https://api.binance.com'
 stream_url = 'wss://stream.binance.com:9443/ws'
 
@@ -219,10 +219,11 @@ def get_init(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
     tmp[symbol.lower()] = order_book.copy()
-    
+
 
 async def main():
     global loop,tmp
+    tmp = {}
     batch_size = ceil(300)
     bm_count = ceil(len(symbols)/batch_size)
     print(
