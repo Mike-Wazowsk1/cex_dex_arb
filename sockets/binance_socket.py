@@ -82,9 +82,6 @@ def process_updates(message):
 
 
 def to_db(asks, bids, symbol):
-    print(asks)
-    print(bids)
-
     timestamp = time.time()
     asks_price = np.array([float(x[0]) for x in asks[:15]])
     asks_quantity = np.array([float(x[1]) for x in asks[:15]])
