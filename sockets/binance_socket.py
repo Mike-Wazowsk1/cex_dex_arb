@@ -83,7 +83,7 @@ def process_updates(message, symbol):
 def message_handler(message, path):
     global order_book, manager
     symbol = path.split("@")[0]
-
+    print(symbol)
     print(manager[symbol.lower()]['lastUpdateId'])
     try:
         if "depthUpdate" in json.dumps(message):
@@ -102,6 +102,7 @@ def message_handler(message, path):
                 print("resync")
                 print('Out of sync, re-syncing...')
                 print(manager[symbol.lower()]['lastUpdateId'])
+                print(symbol)
                 manager[symbol.lower()] = init_snapshot(symbol)
                 print(manager[symbol.lower()]['lastUpdateId'])
 
