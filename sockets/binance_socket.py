@@ -47,13 +47,11 @@ def manage_order_book(side, update, symbol):
     for i in range(0, len(manager[symbol.lower()][side])):
         if price == manager[symbol.lower()][side][i][0]:
             # quantity is 0: remove
-            if float(quantity) <= 0.01:
+            if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
-                return
             else:
                 # quantity is not 0: update the order with new quantity
                 manager[symbol.lower()][side][i] = update
-                return
 
     # price not found: add new order
     if float(quantity) != 0:
@@ -166,9 +164,9 @@ def reciver(client, current_batch, global_dict):
     manager = {}
     twm.start()
     for symbol in current_batch:
+        manager[symbol.lower()] = init_snapshot(symbol)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-        manager[symbol.lower()] = init_snapshot(symbol)
     twm.join()
 
 
