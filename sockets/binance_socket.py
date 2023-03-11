@@ -103,6 +103,7 @@ def message_handler(message, path):
     except Exception as e:
         print(e)
         print(manager[symbol.lower()])
+        print(manager)
         print(f"ERROR SYMBOL: {symbol}")
         time.sleep(5)
 
