@@ -18,6 +18,7 @@ from database.db import DataBase
 from binance.client import Client
 
 
+
 db = DataBase()
 order_book = {
     "lastUpdateId": 0,
@@ -27,6 +28,7 @@ order_book = {
 
 base_url = 'https://api.binance.com'
 stream_url = 'wss://stream.binance.com:9443/ws'
+proxy = mp.Manager()
 
 client = Client()
 
@@ -228,15 +230,15 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
+
     for symbol in symbols:
         get_init(symbol)
-
     print(tmp)
     time.sleep(10)
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        p = mp.Process(target=reciver, args=[client, current_batch, 0])
+        p = th.Thread(target=reciver, args=[client, current_batch, 0])
         p.start()
         time.sleep(300)
 
