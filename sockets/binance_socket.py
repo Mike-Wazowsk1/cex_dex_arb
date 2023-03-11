@@ -24,6 +24,7 @@ order_book = {
     "bids": [],
     "asks": []
 }
+tmp = {}
 base_url = 'https://api.binance.com'
 stream_url = 'wss://stream.binance.com:9443/ws'
 
@@ -40,45 +41,45 @@ def get_snapshot(symbol):
     return msg
 
 
-def manage_order_book(side, update):
+def manage_order_book(side, update,symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
-    global order_book
+    global order_book,tmp
     price, quantity = update
     # price exists: remove or update local order
-    for i in range(0, len(order_book[side])):
-        if price == order_book[side][i][0]:
+    for i in range(0, len(tmp[symbol][side])):
+        if price == tmp[symbol][side][i][0]:
             # quantity is 0: remove
             if float(quantity) == 0:
-                order_book[side].pop(i)
+                tmp[symbol][side].pop(i)
                 return
             else:
                 # quantity is not 0: update the order with new quantity
-                order_book[side][i] = update
+                tmp[symbol][side][i] = update
                 return
 
     # price not found: add new order
     if float(quantity) != 0:
-        order_book[side].insert(-1, update)
+        tmp[symbol][side].insert(-1, update)
         if side == 'asks':
             # asks prices in ascendant order
-            order_book[side] = sorted(
-                order_book[side], key=lambda x: float(x[0]))
+            tmp[symbol][side] = sorted(
+                tmp[symbol][side], key=lambda x: float(x[0]))
         else:
-            order_book[side] = sorted(order_book[side], key=lambda x: float(
+            tmp[symbol][side] = sorted(tmp[symbol][side], key=lambda x: float(
                 x[0]), reverse=True)  # bids prices in descendant order
 
-    if len(order_book[side]) > 1000:
-        order_book[side].pop(len(order_book[side])-1)
+    if len(tmp[symbol][side]) > 1000:
+        tmp[symbol][side].pop(len(tmp[symbol][side])-1)
 
 
-def process_updates(message):
+def process_updates(message,symbol):
 
     for update in message['bids']:
-        manage_order_book('bids', update)
+        manage_order_book('bids', update,symbol)
     for update in message['asks']:
-        manage_order_book('asks', update)
+        manage_order_book('asks', update,symbol)
 
 
 def to_db(asks, bids, symbol):
@@ -122,23 +123,23 @@ def to_db(asks, bids, symbol):
 
 
 def message_handler(message, path):
-    global order_book, symbols
-    symbol = path.split("@")[0]
+    global symbols,tmp
+    symbol = path.split("@")[0].lower()
     # print(message)
     
-    last_update_id = order_book['lastUpdateId']
+    last_update_id = tmp[symbol]['lastUpdateId']
     if message['lastUpdateId'] <= last_update_id:
         return
     if last_update_id + 1 <= message['lastUpdateId']:
-        order_book['lastUpdateId'] = message['lastUpdateId']
-        process_updates(message)
+        tmp[symbol]['lastUpdateId'] = message['lastUpdateId']
+        process_updates(message,symbol)
     else:
         logging.info('Out of sync, re-syncing...')
         for symbol in symbols:
-            order_book = get_snapshot(symbol)
+            tmp[symbol] = get_snapshot(symbol)
 
-    bids = np.array(sorted(order_book['bids'], key=lambda x: float(x[0]), reverse=True))[:15]
-    asks = np.array(sorted(order_book['asks'], key=lambda x: float(x[0])))[:15]
+    bids = np.array(sorted(tmp[symbol]['bids'], key=lambda x: float(x[0]), reverse=True))[:15]
+    asks = np.array(sorted(tmp[symbol]['asks'], key=lambda x: float(x[0])))[:15]
     to_db(asks, bids, symbol)
 
 
@@ -248,6 +249,7 @@ def get_init(symbol):
     # ,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
+    tmp[symbol.lower()] = order_book.copy()
 
 
 async def main():
