@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from binance import AsyncClient, BinanceSocketManager
 from binance import ThreadedWebsocketManager
 import multiprocessing as mp
@@ -17,6 +18,81 @@ from database.db import DataBase
 
 db = DataBase()
 
+order_book = {
+    "lastUpdateId": 0,
+    "bids": [],
+    "asks": []
+}
+client = Client()
+info = client.get_exchange_info()
+symbols = [x['symbol'] for x in info['symbols']]
+symbols = [x for x in set(symbols)]
+
+
+def init_snapshot(symbol):
+    """
+    Retrieve order book
+    """
+    return client.depth(symbol, limit=1000)
+
+
+def manage_order_book(side, update,symbol):
+    """
+    Updates local order book's bid or ask lists based on the received update ([price, quantity])
+    """
+    price, quantity = update
+    # price exists: remove or update local order
+    for i in range(0, len(manager[symbol.lower()][side])):
+        if price == manager[symbol.lower()][side][i][0]:
+            # quantity is 0: remove
+            if float(quantity) == 0:
+                manager[symbol.lower()][side].pop(i)
+                return
+            else:
+                # quantity is not 0: update the order with new quantity
+                manager[symbol.lower()][side][i] = update
+                return
+
+    # price not found: add new order
+    if float(quantity) != 0:
+        manager[symbol.lower()][side].insert(-1, update)
+        if side == 'asks':
+            # asks prices in ascendant order
+            manager[symbol.lower()][side] = sorted(
+                manager[symbol.lower()][side], key=lambda x: float(x[0]))
+        else:
+            manager[symbol.lower()][side] = sorted(manager[symbol.lower()][side], key=lambda x: float(
+                x[0]), reverse=True)  # bids prices in descendant order
+
+    if len(manager[symbol.lower()][side]) > 1000:
+        manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
+
+
+def process_updates(message,symbol):
+    start = time.time()
+
+    for update in message['bids']:
+        manage_order_book('bids', update,symbol)
+    for update in message['asks']:
+        manage_order_book('asks', update,symbol)
+    now = time.time()
+
+
+def message_handler(message,path):
+    global order_book, manager
+    symbol = path.split("@")[0]
+
+    last_update_id = manager[symbol.lower()]['lastUpdateId']
+    if message['u'] <= last_update_id:
+        return
+    if message['U'] <= last_update_id + 1 <= message['u']:
+        manager[symbol.lower()]['lastUpdateId'] = message['u']
+        process_updates(message,symbol)
+    else:
+        logging.info('Out of sync, re-syncing...')
+        manager[symbol.lower()] = get_snapshot(symbol)
+
+    print(manager)
 
 
 def printer(msg, path):
@@ -29,7 +105,7 @@ def printer(msg, path):
         timestamp = msg['lastUpdateId']
 
         asks = sorted(msg['asks'])
-        bids = sorted(msg['bids'],reverse=True)
+        bids = sorted(msg['bids'], reverse=True)
 
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
@@ -75,17 +151,19 @@ def printer(msg, path):
 
 async def writer(bm, symbol, loop):
     print(symbol)
-    bm.start_depth_socket(callback=printer, symbol=symbol,
+    bm.start_depth_socket(callback=message_handler, symbol=symbol,
                           depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
 
 
 def reciver(client, current_batch, global_dict):
+    global manager
     twm = ThreadedWebsocketManager()
+    manager = {}
     twm.start()
     ss = []
     for symbol in current_batch:
         twm.start_depth_socket(
-            callback=printer, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
+            callback=message_handler, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
         ss.append(symbol)
     print(f"Len: {len(ss)} {ss[:3]}")
     twm.join()
@@ -131,11 +209,8 @@ def get_snapshot(symbol):
 
 async def main():
     global loop
-    client = await AsyncClient.create()
+    client = Client()
 
-    info = await client.get_exchange_info()
-    symbols = [x['symbol'] for x in info['symbols']]
-    symbols = [x for x in set(symbols)]
     batch_size = ceil(300)
     bm_count = ceil(len(symbols)/batch_size)
     print(
