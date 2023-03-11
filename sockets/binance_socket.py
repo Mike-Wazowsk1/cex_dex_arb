@@ -109,6 +109,7 @@ def printer(asks, bids,symbol):
     param msg: input message
     """
     try:
+        print(asks)
         asks = sorted(asks)
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
