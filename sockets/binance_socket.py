@@ -88,7 +88,10 @@ def message_handler(message, path):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
             if message['u'] <= last_update_id:
                 return  
-            if message['U'] <= last_update_id + 1 <= message['u']:
+            elif message['U'] <= last_update_id + 1 <= message['u']:
+                manager[symbol.lower()]['lastUpdateId'] = message['u']
+                process_updates(message,symbol)
+            elif last_update_id < message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
                 process_updates(message,symbol)
             else:
