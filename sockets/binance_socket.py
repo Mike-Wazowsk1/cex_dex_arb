@@ -40,7 +40,7 @@ def printer(msg, path):
         for i, val in enumerate(asks_quantity):
             if usdt_quantity < user_max_amount:
                 quantity += val
-                mean_price += (asks_price[i] * val)
+                mean_price += asks_price[i]
                 usdt_quantity += quantity * asks_price[i]
                 count += 1
 
@@ -57,7 +57,7 @@ def printer(msg, path):
         for i, val in enumerate(bids_quantity):
             if usdt_quantity < user_max_amount:
                 quantity += val
-                mean_price += (bids_price[i] * val)
+                mean_price += bids_price[i]
                 usdt_quantity += quantity * bids_price[i]
                 count += 1
 
