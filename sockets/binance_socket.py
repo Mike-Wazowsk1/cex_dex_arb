@@ -173,7 +173,8 @@ def reciver(client, current_batch, global_dict):
         print(manager[symbol.lower()])
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
-        time.sleep(10)
+        print(symbol)
+        time.sleep(30)
     twm.join()
 
 
