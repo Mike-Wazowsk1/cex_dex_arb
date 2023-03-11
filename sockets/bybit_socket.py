@@ -16,8 +16,8 @@ def handle_orderbook(message):
         data = message['data']
         symbol = data['s']
         timestamp = data['t']
-        bids = data['b'][:15]
-        asks = data['a'][:15]
+        bids = sorted(data['b'][:15],reverse=True)
+        asks = sorted(data['a'][:15])
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         user_max_amount = db.get_info_col('max_amount')
