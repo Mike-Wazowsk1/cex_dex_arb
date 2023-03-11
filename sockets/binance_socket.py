@@ -81,6 +81,7 @@ def process_updates(message,symbol):
 def message_handler(message,path):
     global order_book, manager
     symbol = path.split("@")[0]
+    print(symbol)
 
     last_update_id = manager[symbol.lower()]['lastUpdateId']
     if message['lastUpdateId'] <= last_update_id:
@@ -106,12 +107,6 @@ def printer(asks, bids,symbol):
     param msg: input message
     """
     try:
-        # symbol = path.split("@")[0]
-        # timestamp = msg['lastUpdateId']
-
-        # asks = sorted(msg['asks'])
-        # bids = sorted(msg['bids'], reverse=True)
-
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         user_max_amount = float(db.get_info_col('max_amount'))
