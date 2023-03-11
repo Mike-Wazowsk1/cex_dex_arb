@@ -82,7 +82,7 @@ def process_updates(message, symbol):
 def message_handler(message, path):
     global order_book, manager
     symbol = path.split("@")[0]
-    print(symbol)
+    print(message)
 
     last_update_id = manager[symbol.lower()]['lastUpdateId']
     if message['lastUpdateId'] <= last_update_id:
