@@ -251,7 +251,7 @@ async def get_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = db.get_command(tic,ex)[0]
     text = str(data)
     
-    text += " " + datetime.datetime.fromtimestamp(data[3])
+    text += " " + str(datetime.datetime.fromtimestamp(data[3]))
     await update.message.reply_text(text, reply_markup=KEYBOARD.main_keyboard)
 
 def main() -> None:
