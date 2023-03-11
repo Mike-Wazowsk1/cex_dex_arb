@@ -96,11 +96,11 @@ def message_handler(message,path):
                 manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
     bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
                 x[0]), reverse=True) )
-    printer(asks,bids)
+    printer(asks,bids,symbol)
 
 
 
-def printer(asks, bids):
+def printer(asks, bids,symbol):
     """
     Function to process the received messages
     param msg: input message
@@ -144,6 +144,7 @@ def printer(asks, bids):
                 count += 1
 
         bids_amount = quantity
+        timestamp = time.time()
         bids_avg_price = mean_price/bids_amount
 
         db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
