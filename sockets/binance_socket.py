@@ -44,7 +44,7 @@ def printer(msg, path):
                 usdt_quantity += quantity * asks_price[i]
                 count += 1
 
-        asks_amount = min(quantity, user_max_amount)
+        asks_amount = quantity
         asks_avg_price = mean_price/asks_amount
 
         bids_price = np.array([float(x[0]) for x in bids[:15]])
@@ -61,7 +61,7 @@ def printer(msg, path):
                 usdt_quantity += quantity * bids_price[i]
                 count += 1
 
-        bids_amount = min(quantity, user_max_amount)
+        bids_amount = quantity
         bids_avg_price = mean_price/bids_amount
 
         db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
