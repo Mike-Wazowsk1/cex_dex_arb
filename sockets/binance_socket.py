@@ -82,6 +82,7 @@ def process_updates(message, symbol):
 
 def message_handler(message, path):
     global order_book, manager
+    print(manager)
     try:
         symbol = path.split("@")[0]
         if "depthUpdate" in json.dumps(message):
@@ -168,7 +169,7 @@ def reciver(client, current_batch, global_dict):
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
-        print(manager)
+        # print(manager)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
         print(symbol)
