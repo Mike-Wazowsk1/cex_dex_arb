@@ -12,6 +12,8 @@ db = DataBase()
 
 
 def handle_orderbook(message):
+    print(message)
+
     if message['type'] == 'data':
         data = message['data']
         symbol = data['s']
