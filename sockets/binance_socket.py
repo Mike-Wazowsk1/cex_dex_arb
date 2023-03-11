@@ -33,7 +33,9 @@ def init_snapshot(symbol):
     """
     Retrieve order book
     """
-    return client.depth(symbol, limit=1000)
+    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
+    msg = requests.get(base_url).json()
+    return msg
 
 
 def manage_order_book(side, update,symbol):
@@ -164,7 +166,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-        manager[symbol.lower()] = order_book
+        manager[symbol.lower()] = init_snapshot(symbol)
     twm.join()
 
 
