@@ -160,12 +160,10 @@ def reciver(client, current_batch, global_dict):
     twm = ThreadedWebsocketManager()
     manager = {}
     twm.start()
-    ss = []
     for symbol in current_batch:
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol, depth=BinanceSocketManager.WEBSOCKET_DEPTH_20)
-        ss.append(symbol)
-    print(f"Len: {len(ss)} {ss[:3]}")
+        manager[symbol.lower()] = order_book
     twm.join()
 
 
