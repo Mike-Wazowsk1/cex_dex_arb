@@ -105,8 +105,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = f"""
 {symbol}
 
-\|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} 15
-\|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} 15
+\|[{ex1}]({make_link_to_ex(ex1,symbol)})\| {str(round(asks_price1,6)).replace(".",",")} {count1} ордера
+\|[{ex2}]({make_link_to_ex(ex2,symbol)})\| {str(round(bids_price2,6)).replace(".",',')} {count2} ордера
 
 Spread: {str(round(bids_price2*Decimal(value) - asks_price1*Decimal(value))).replace(".",",").replace("-","minus ")}"""
         button = [[InlineKeyboardButton(
