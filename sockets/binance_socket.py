@@ -126,23 +126,23 @@ def message_handler(message, path):
     symbol = path.split("@")[0]
     # print(message)
     
+    print(message)
+    # if "depthUpdate" in message['e']:
+    #     print(symbol)
+    #     last_update_id = order_book['lastUpdateId']
+    #     if message['u'] <= last_update_id:
+    #         return
+    #     if message['U'] <= last_update_id + 1 <= message['u']:
+    #         order_book['lastUpdateId'] = message['u']
+    #         process_updates(message)
+    #     else:
+    #         logging.info('Out of sync, re-syncing...')
+    #         for symbol in symbols:
+    #             order_book = get_snapshot(symbol)
 
-    if "depthUpdate" in message['e']:
-        print(symbol)
-        last_update_id = order_book['lastUpdateId']
-        if message['u'] <= last_update_id:
-            return
-        if message['U'] <= last_update_id + 1 <= message['u']:
-            order_book['lastUpdateId'] = message['u']
-            process_updates(message)
-        else:
-            logging.info('Out of sync, re-syncing...')
-            for symbol in symbols:
-                order_book = get_snapshot(symbol)
-
-        bids = np.array(order_book['bids'][:, 0])[:15]
-        asks = np.array(order_book['asks'][:, 0])[:15]
-        to_db(asks, bids, symbol)
+    #     bids = np.array(order_book['bids'][:, 0])[:15]
+    #     asks = np.array(order_book['asks'][:, 0])[:15]
+    #     to_db(asks, bids, symbol)
 
 
 def printer(msg, path):
