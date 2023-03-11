@@ -252,15 +252,17 @@ def get_init(symbol):
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
     tmp[symbol.lower()] = order_book.copy()
 
-
 async def main():
-    global loop
+    global loop,tmp
     batch_size = ceil(300)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
     with mp.Pool() as pool:
         pool.map(get_init, symbols)
+    print(tmp)
+    time.sleep(10)
+
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
