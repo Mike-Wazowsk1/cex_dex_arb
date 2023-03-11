@@ -347,7 +347,7 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
 
 
     def get_command(self,symbol,db_name):
-        q = f"select {symbol}, asks_price as ask,bids_price as bid,timestamp,count from {db_name} where timestamp!=0 order by symbol"
+        q = f"select symbol, asks_price as ask,bids_price as bid,timestamp,count from {db_name} where timestamp!=0 and symbol = '{symbol}' order by symbol"
         try:
             self.conn = psycopg2.connect(
                 host=DB.host,
