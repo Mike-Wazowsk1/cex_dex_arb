@@ -217,7 +217,7 @@ def get_snapshot(symbol):
 
 
 async def main():
-    global loop
+    global loop,manager
     manager = {}
 
     client = Client()
