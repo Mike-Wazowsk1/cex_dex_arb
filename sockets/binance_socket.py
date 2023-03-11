@@ -92,20 +92,25 @@ def message_handler(message,path):
         logging.info('Out of sync, re-syncing...')
         manager[symbol.lower()] = get_snapshot(symbol)
 
-    print(manager)
+    asks =  np.array(sorted(
+                manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
+    bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+                x[0]), reverse=True) )
+    printer(asks,bids)
 
 
-def printer(msg, path):
+
+def printer(asks, bids):
     """
     Function to process the received messages
     param msg: input message
     """
     try:
-        symbol = path.split("@")[0]
-        timestamp = msg['lastUpdateId']
+        # symbol = path.split("@")[0]
+        # timestamp = msg['lastUpdateId']
 
-        asks = sorted(msg['asks'])
-        bids = sorted(msg['bids'], reverse=True)
+        # asks = sorted(msg['asks'])
+        # bids = sorted(msg['bids'], reverse=True)
 
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
@@ -146,7 +151,7 @@ def printer(msg, path):
     except Exception as e:
         print("I'm here")
         print(e)
-        print(msg)
+
 
 
 async def writer(bm, symbol, loop):
