@@ -75,9 +75,9 @@ def manage_order_book(side, update):
 
 def process_updates(message):
 
-    for update in message['b']:
+    for update in message['bids']:
         manage_order_book('bids', update)
-    for update in message['a']:
+    for update in message['asks']:
         manage_order_book('asks', update)
 
 
