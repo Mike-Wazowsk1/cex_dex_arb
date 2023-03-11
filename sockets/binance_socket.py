@@ -88,16 +88,16 @@ def message_handler(message, path):
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
             if message['u'] <= last_update_id:
-                return  
+                return
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                process_updates(message,symbol)
-            elif last_update_id < message['u']:
-                manager[symbol.lower()]['lastUpdateId'] = message['u']
-                process_updates(message,symbol)
+                process_updates(message, symbol)
             else:
-                print(f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
+                print(
+                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
+                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
+                time.sleep(1)
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
@@ -112,7 +112,6 @@ def message_handler(message, path):
         print(f"ERROR SYMBOL: {symbol}")
 
         time.sleep(5)
-
 
 
 def printer(asks, bids, symbol):
@@ -221,7 +220,7 @@ def get_snapshot(symbol):
 
 
 async def main():
-    global loop,manager
+    global loop, manager
     manager = {}
 
     client = Client()
