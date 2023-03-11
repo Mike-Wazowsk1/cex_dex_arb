@@ -93,6 +93,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if 'ex' in query.data and "next" not in query.data and "prev" not in query.data:
         data = query.data.split("_")[2:]
         ex1, ex2, symbol, value = data
+        print(value,db.get_info_col('max_amount'))
         value = min(value,db.get_info_col('max_amount'))
 
         # value = 0
