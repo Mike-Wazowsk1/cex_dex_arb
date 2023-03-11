@@ -24,11 +24,13 @@ def handle_orderbook(message):
         quantity = 0
         count = 0
         mean_price = 0
+        prev_quantity = 0
         for i, val in enumerate(asks_quantity):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
-                    asks_price[i] * (quantity-user_max_amount))
+                    asks_price[i] * (user_max_amount - prev_quantity))
+                prev_quantity = quantity
                 count += 1
 
         asks_amount = min(quantity, user_max_amount)
@@ -40,13 +42,14 @@ def handle_orderbook(message):
         quantity = 0
         count = 0
         mean_price = 0
+        prev_quantity = 0
         for i, val in enumerate(bids_quantity):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
-                    bids_price[i] * (quantity-user_max_amount))
+                    bids_price[i] * (user_max_amount - prev_quantity))
+                prev_quantity = quantity
                 count += 1
-
         bids_amount = min(quantity, user_max_amount)
         bids_avg_price = mean_price/bids_amount
 
@@ -65,11 +68,13 @@ def handle_orderbook(message):
         quantity = 0
         count = 0
         mean_price = 0
+        prev_quantity = 0
         for i, val in enumerate(asks_quantity):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (asks_price[i] * val) if quantity < user_max_amount else (
-                    asks_price[i] * (quantity-user_max_amount))
+                    asks_price[i] * (user_max_amount - prev_quantity))
+                prev_quantity = quantity
                 count += 1
 
         asks_amount = min(quantity, user_max_amount)
@@ -81,11 +86,13 @@ def handle_orderbook(message):
         quantity = 0
         count = 0
         mean_price = 0
+        prev_quantity = 0
         for i, val in enumerate(bids_quantity):
             if quantity < user_max_amount:
                 quantity += val
                 mean_price += (bids_price[i] * val) if quantity < user_max_amount else (
-                    bids_price[i] * (quantity-user_max_amount))
+                    bids_price[i] * (user_max_amount - prev_quantity))
+                prev_quantity = quantity
                 count += 1
 
         bids_amount = min(quantity, user_max_amount)
