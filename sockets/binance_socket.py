@@ -69,9 +69,9 @@ def init_snapshot(symbol):
     """
     Retrieve order book
     """
+    time.sleep(3)
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
-    time.sleep(1)
     CNT += 1
     return msg
 
@@ -128,7 +128,7 @@ async def message_handler(message, path):
     symbol = path.split("@")[0]
         
     print(symbol)
-    if base_info[symbol.lower()] >= 50_000:
+    if base_info[symbol.lower()] >= 50_0000:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
