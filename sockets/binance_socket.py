@@ -72,9 +72,6 @@ def init_snapshot(symbol):
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
     CNT += 1
-    if CNT >= 1200:
-        time.sleep(30)
-        CNT = 0 
     return msg
 
 
@@ -149,7 +146,6 @@ async def message_handler(message, path):
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
-                time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
         base_info[symbol.lower()] += 1
