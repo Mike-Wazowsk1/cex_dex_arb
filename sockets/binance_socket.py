@@ -139,6 +139,8 @@ def message_handler(message, path):
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
             if message['u'] <= last_update_id:
+                print(f"Drop: {symbol}")
+
                 return
             if message['U'] <= last_update_id + 1 <= message['u']:
                 print(f"TO DB: {symbol}")
