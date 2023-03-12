@@ -71,6 +71,7 @@ def init_snapshot(symbol,no_wait=False):
         """
         Retrieve order book
         """
+        time.sleep(random.randint(1,10))
         base_info[symbol.lower()] = True
         print(f"REST request: {symbol} no_wait")
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
@@ -80,7 +81,7 @@ def init_snapshot(symbol,no_wait=False):
         return msg
     if base_info.get(symbol.lower(),False) == True:
         return manager[symbol.lower()]
-    else:
+    if base_info.get(symbol.lower(),False) == False:
         base_info[symbol.lower()] = True
         print(f"REST request: {symbol}")
         """
@@ -253,14 +254,11 @@ def reciver(client, symbol, global_dict):
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
-    time.sleep(5)
     # for symbol in current_batch:
     base_info[symbol.lower()] = 0
     twm.start_depth_socket(callback=message_handler, symbol=symbol)
     print(f"Reciver: {symbol}")
     manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
-    time.sleep(10)
-
     twm.join()
 
 
