@@ -93,12 +93,10 @@ def manage_order_book(side, update, symbol):
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
-                print("pop")
                 i -= 1
             else:
                 # quantity is not 0: update the order with new quantity
                 manager[symbol.lower()][side][i] = update
-                print("update")
 
         i += 1
 
