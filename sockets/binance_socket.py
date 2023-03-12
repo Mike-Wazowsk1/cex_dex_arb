@@ -33,7 +33,7 @@ for table in tables:
     if table != 'gate':
         symbols = np.array(db.get_arb_info(table))[:,0]
         for symbol in symbols:
-            if symbol not in symbols:
+            if symbol.upper() not in seen:
                 seen.append(symbol.upper())
 print(len(seen))
 print(seen)
