@@ -256,6 +256,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
+        print(f"Reciver: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
         time.sleep(10)
 
@@ -278,14 +279,10 @@ async def main():
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        print(current_batch)
         for symbol in current_batch:
-            print(symbol)
-
             symbol = [symbol]
             p = mp.Process(target=reciver, args=[client, current_batch, 0])
             p.start()
-            time.sleep(5)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
