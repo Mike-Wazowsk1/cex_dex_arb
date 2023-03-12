@@ -220,7 +220,8 @@ async def printer(asks, bids, symbol):
 async def writer(bm, symbol, loop):
     bm.start_depth_socket(callback=message_handler, symbol=symbol)
 
-
+def reciver_proxy(client, current_batch, global_dict):
+    asyncio.run(reciver(client, current_batch, global_dict))
 async def reciver(client, current_batch, global_dict):
     global manager,CNT,base_info
     CNT = 0 
@@ -250,7 +251,7 @@ async def main():
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        p = mp.Process(target=reciver, args=[client, current_batch, 0])
+        p = mp.Process(target=reciver_proxy, args=[client, current_batch, 0])
         p.start()
         time.sleep(5)
 
