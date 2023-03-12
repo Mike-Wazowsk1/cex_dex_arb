@@ -86,7 +86,7 @@ def manage_order_book(side, update, symbol):
     price, quantity = update
     # price exists: remove or update local order
     for i in range(0, len(manager[symbol.lower()][side])-1):
-        if price == manager[symbol.lower()][side][i][0]:
+        if float(price) == float(manager[symbol.lower()][side][i][0]):
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
