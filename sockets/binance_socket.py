@@ -78,6 +78,7 @@ def init_snapshot(symbol):
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         CNT += 1
+        base_info[symbol.lower()] = False
         return msg
 
 
