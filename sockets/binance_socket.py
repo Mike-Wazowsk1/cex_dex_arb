@@ -124,10 +124,9 @@ def process_updates(message, symbol):
         manage_order_book('asks', update, symbol)
 
 
-def message_handler(message, path):
+async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
-    print(symbol)
 
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
@@ -138,12 +137,11 @@ def message_handler(message, path):
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
-            if message['u'] < last_update_id:
-                print(f"Drop: {symbol}")
+            # if message['u'] < last_update_id:
+            #     print(f"Drop: {symbol}")
 
-                return
-            if message['U'] <= last_update_id + 1 <= message['u']:
-                print(f"TO DB: {symbol}")
+            #     return
+            if last_update_id:
                 process_updates(message, symbol)
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
             else:
