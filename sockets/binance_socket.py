@@ -248,19 +248,18 @@ def message_proxy(message, path):
 #     asyncio.run(reciver(client, current_batch, global_dict))
 
 
-def reciver(client, current_batch, global_dict):
+def reciver(client, symbol, global_dict):
     global manager,CNT,base_info
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
-    print(current_batch)
     time.sleep(5)
-    for symbol in current_batch:
-        base_info[symbol.lower()] = 0
-        twm.start_depth_socket(callback=message_handler, symbol=symbol)
-        print(f"Reciver: {symbol}")
-        manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
-        time.sleep(10)
+    # for symbol in current_batch:
+    base_info[symbol.lower()] = 0
+    twm.start_depth_socket(callback=message_handler, symbol=symbol)
+    print(f"Reciver: {symbol}")
+    manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
+    time.sleep(10)
 
     twm.join()
 
@@ -282,7 +281,7 @@ async def main():
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         for symbol in current_batch:
-            symbol = [symbol]
+            # symbol = [symbol]
             p = mp.Process(target=reciver, args=[client, symbol, 0])
             p.start()
 
