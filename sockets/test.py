@@ -34,8 +34,8 @@ def get_snapshot(symbol):
 info = client.get_exchange_info()
 symbols = [x['symbol'] for x in info['symbols']]
 symbols = [x for x in set(symbols)]
-with mp.Pool() as pool:
-    pool.map(get_snapshot, symbols)
+# with mp.Pool() as pool:
+#     pool.map(get_snapshot, symbols)
 
 
 
@@ -60,7 +60,7 @@ for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
-symbols = ["SUSHIUSDT"]
+symbols = ["ETHUSDT"]
         
 
 
