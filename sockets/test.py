@@ -60,7 +60,7 @@ for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
-symbols = ["LTCUSDDT"]
+symbols = ["LTCSDDT"]
         
 
 
@@ -73,9 +73,6 @@ def init_snapshot(symbol):
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
     CNT += 1
-    if CNT >= 1200:
-        time.sleep(30)
-        CNT = 0 
     return msg
 
 
@@ -116,6 +113,7 @@ async def manage_order_book(side, update, symbol):
     if len(manager[symbol.lower()][side]) > 1000:
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
+
 async def process_updates(message, symbol):
     for update in message['b']:
         await manage_order_book('bids', update, symbol)
@@ -129,6 +127,7 @@ async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
     print(symbol)
+    
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
@@ -142,6 +141,7 @@ async def message_handler(message, path):
             #     print(f"Drop: {symbol}")
 
             #     return
+
             if message['u'] <= last_update_id:
                 return
             elif message['U'] <= last_update_id + 1 <= message['u']:
@@ -178,7 +178,6 @@ async def printer(asks, bids, symbol):
     try:
         if symbol.lower() == 'ltcusdt':
             print("IN FUNC")
-
             print(asks)
             print(bids)
         asks_price = asks[:,0].astype(np.float64)
@@ -216,8 +215,8 @@ async def printer(asks, bids, symbol):
         timestamp = time.time()
         bids_avg_price = mean_price/count
 
-        # db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
-        #              bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
+        # db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=round(asks_avg_price,10),
+        #              bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
     except Exception as e:
         print("I'm here")
         print(e)
@@ -225,6 +224,13 @@ async def printer(asks, bids, symbol):
 
 async def writer(bm, symbol, loop):
     bm.start_depth_socket(callback=message_handler, symbol=symbol)
+
+def message_proxy(message, path):
+    global loop
+    asyncio.run(message_handler(message, path))
+
+# reciver_proxy(client, current_batch, global_dict):
+#     asyncio.run(reciver(client, current_batch, global_dict))
 
 
 def reciver(client, current_batch, global_dict):
@@ -243,7 +249,7 @@ def reciver(client, current_batch, global_dict):
 
 
 async def main():
-    global loop, manager,base_info
+    global loop, manager, base_info
     manager = {}
     base_info = {}
 
