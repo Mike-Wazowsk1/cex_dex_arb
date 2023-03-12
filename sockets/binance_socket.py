@@ -74,7 +74,7 @@ def init_snapshot(symbol):
         """
         Retrieve order book
         """
-        time.sleep(random.randint(5,10))
+        time.sleep(random.randint(10,20))
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         CNT += 1
@@ -171,6 +171,7 @@ async def message_handler(message, path):
         if "lastUpdateId" in str(e):
             print(manager[symbol.lower()])
 
+
         print(f"ERROR SYMBOL: {symbol}")
 
 
@@ -243,7 +244,6 @@ def reciver(client, current_batch, global_dict):
         manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
-        time.sleep(3)
     twm.join()
 
 
