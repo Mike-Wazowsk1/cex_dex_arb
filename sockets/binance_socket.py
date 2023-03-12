@@ -65,16 +65,20 @@ symbols = seen
 
 
 def init_snapshot(symbol):
-    global CNT
-    print("REST request")
-    """
-    Retrieve order book
-    """
-    time.sleep(random.randint(20,30))
-    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
-    msg = requests.get(base_url).json()
-    CNT += 1
-    return msg
+    global CNT, base_info
+    if base_info.get(symbol.lower(),False) == True:
+        return manager[symbol.lower()]
+    else:
+        base_info[symbol.lower()] = True
+        print("REST request")
+        """
+        Retrieve order book
+        """
+        time.sleep(random.randint(50,60))
+        base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
+        msg = requests.get(base_url).json()
+        CNT += 1
+        return msg
 
 
 async def manage_order_book(side, update, symbol):
@@ -147,13 +151,14 @@ async def message_handler(message, path):
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
                 await process_updates(message, symbol)
+
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
-        base_info[symbol.lower()] += 1
+
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
@@ -166,7 +171,6 @@ async def message_handler(message, path):
             print(manager[symbol.lower()])
 
         print(f"ERROR SYMBOL: {symbol}")
-        base_info[symbol.lower()] += 1
 
 
 
@@ -176,10 +180,6 @@ async def printer(asks, bids, symbol):
     param msg: input message
     """
     try:
-        if symbol.lower() == 'ltcusdt':
-            print("IN FUNC")
-            print(asks)
-            print(bids)
         asks_price = asks[:,0].astype(np.float64)
         asks_quantity = asks[:,1].astype(np.float64)
         user_max_amount = float(db.get_info_col('max_amount'))
