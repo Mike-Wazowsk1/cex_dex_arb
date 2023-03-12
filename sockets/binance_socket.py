@@ -139,9 +139,11 @@ async def message_handler(message, path):
             #     print(f"Drop: {symbol}")
 
             #     return
-            if last_update_id:
-                await process_updates(message, symbol)
+            if message['u'] <= last_update_id:
+                return
+            elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
+                await process_updates(message, symbol)
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
