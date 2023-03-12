@@ -74,7 +74,7 @@ def init_snapshot(symbol):
         """
         Retrieve order book
         """
-        time.sleep(random.randint(50,60))
+        time.sleep(random.randint(5,10))
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         CNT += 1
