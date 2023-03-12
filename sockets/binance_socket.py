@@ -128,7 +128,7 @@ def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
 
-    if base_info[symbol.lower()] >= 10:
+    if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
@@ -172,9 +172,6 @@ def printer(asks, bids, symbol):
     param msg: input message
     """
     try:
-        if symbol.lower() == 'ltcusdt':
-            print(asks)
-            print(bids)
         asks_price = asks[:,0].astype(np.float64)
         asks_quantity = asks[:,1].astype(np.float64)
         user_max_amount = float(db.get_info_col('max_amount'))
