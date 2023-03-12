@@ -63,7 +63,7 @@ symbols = seen
         
 
 
-async def init_snapshot(symbol):
+def init_snapshot(symbol):
     global CNT
     print("REST request")
     """
@@ -148,7 +148,7 @@ async def message_handler(message, path):
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
-                manager[symbol.lower()] = await init_snapshot(symbol.upper())
+                manager[symbol.lower()] = init_snapshot(symbol.upper())
                 time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
@@ -224,17 +224,17 @@ def message_proxy(message, path):
     global loop
     loop.create_task(message_handler(message, path))
 
-def reciver_proxy(client, current_batch, global_dict):
-    asyncio.run(reciver(client, current_batch, global_dict))
+# reciver_proxy(client, current_batch, global_dict):
+#     asyncio.run(reciver(client, current_batch, global_dict))
 
 
-async def reciver(client, current_batch, global_dict):
+def reciver(client, current_batch, global_dict):
     global manager,CNT,base_info
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
-        manager[symbol.lower()] = await init_snapshot(symbol)
+        manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_proxy, symbol=symbol)
         time.sleep(3)
@@ -257,7 +257,7 @@ async def main():
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        p = mp.Process(target=reciver_proxy, args=[client, current_batch, 0])
+        p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
         time.sleep(5)
 
