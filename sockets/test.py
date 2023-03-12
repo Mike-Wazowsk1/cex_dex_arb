@@ -116,7 +116,6 @@ async def manage_order_book(side, update, symbol):
     if len(manager[symbol.lower()][side]) > 1000:
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
-
 async def process_updates(message, symbol):
     for update in message['b']:
         await manage_order_book('bids', update, symbol)
@@ -125,11 +124,12 @@ async def process_updates(message, symbol):
         await manage_order_book('asks', update, symbol)
 
 
+
 async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
-    print(base_info[symbol.lower()])
-    if base_info[symbol.lower()] >= 20:
+    print(symbol)
+    if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
@@ -138,6 +138,10 @@ async def message_handler(message, path):
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
+            # if message['u'] < last_update_id:
+            #     print(f"Drop: {symbol}")
+
+            #     return
             if message['u'] <= last_update_id:
                 return
             elif message['U'] <= last_update_id + 1 <= message['u']:
@@ -147,18 +151,14 @@ async def message_handler(message, path):
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
-                time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
-
         base_info[symbol.lower()] += 1
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
-        print(asks)
-        print(bids)
         await printer(asks, bids, symbol)
     except Exception as e:
         print(e)
@@ -166,6 +166,7 @@ async def message_handler(message, path):
             print(manager[symbol.lower()])
 
         print(f"ERROR SYMBOL: {symbol}")
+        base_info[symbol.lower()] += 1
 
 
 
