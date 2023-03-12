@@ -64,8 +64,20 @@ symbols = seen
         
 
 
-def init_snapshot(symbol):
+def init_snapshot(symbol,no_wait=False):
     global CNT, base_info
+    if no_wait:
+
+        """
+        Retrieve order book
+        """
+        base_info[symbol.lower()] = True
+        print("REST request")
+        base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
+        msg = requests.get(base_url).json()
+        CNT += 1
+        base_info[symbol.lower()] = False
+        return msg
     if base_info.get(symbol.lower(),False) == True:
         return manager[symbol.lower()]
     else:
@@ -80,6 +92,7 @@ def init_snapshot(symbol):
         CNT += 1
         base_info[symbol.lower()] = False
         return msg
+
 
 
 async def manage_order_book(side, update, symbol):
@@ -243,7 +256,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
-        manager[symbol.lower()] = init_snapshot(symbol)
+        manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
 
     twm.join()
 
