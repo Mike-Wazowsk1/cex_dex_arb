@@ -128,7 +128,7 @@ async def message_handler(message, path):
     symbol = path.split("@")[0]
         
     print(symbol)
-    if base_info[symbol.lower()] >= 100:
+    if base_info[symbol.lower()] >= 1200:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
