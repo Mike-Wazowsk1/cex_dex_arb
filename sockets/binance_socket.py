@@ -72,7 +72,7 @@ def init_snapshot(symbol,no_wait=False):
         Retrieve order book
         """
         base_info[symbol.lower()] = True
-        print(f"REST request: {symbol}")
+        print(f"REST request: {symbol} no_wait")
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         CNT += 1
