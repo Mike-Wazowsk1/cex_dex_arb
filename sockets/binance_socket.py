@@ -41,18 +41,13 @@ for table in tables:
                 continue
 for batch in symbols_array:
     all_symbols.extend(list(set(batch)&set(basic_symbols)))
-print(all_symbols)
 all_symbols = list(set(all_symbols))
-print(all_symbols)
 
 for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
-print(len(seen))
-print(seen)
-print(all_symbols)
+symbols = seen
         
-time.sleep(500)
 # symbols = [x['symbol'] for x in info['symbols']]
 # symbols = [x for x in set(symbols)]
 
