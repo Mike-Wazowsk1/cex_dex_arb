@@ -18,14 +18,26 @@ from database.db import DataBase
 
 
 db = DataBase()
+client = Client()
+
 
 order_book = {
     "lastUpdateId": 0,
     "bids": [],
     "asks": []
 }
-client = Client()
+def get_snapshot(symbol):
+    db.init_snapshot(db_name="binance", symbol=symbol.lower(
+    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
+
 info = client.get_exchange_info()
+symbols = [x['symbol'] for x in info['symbols']]
+symbols = [x for x in set(symbols)]
+with mp.Pool() as pool:
+    pool.map(get_snapshot, symbols)
+
+
+
 tables = db.get_all_tables()
 tables = [x[0] for x in tables]
 seen = []
@@ -48,8 +60,6 @@ for symbol in all_symbols:
         seen.append(symbol.upper())
 symbols = seen
         
-# symbols = [x['symbol'] for x in info['symbols']]
-# symbols = [x for x in set(symbols)]
 
 
 def init_snapshot(symbol):
@@ -205,41 +215,6 @@ def reciver(client, current_batch, global_dict):
     twm.join()
 
 
-def get_snapshot(symbol):
-    # base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
-    # msg = requests.get(base_url).json()
-    # try:
-    #     timestamp = msg['lastUpdateId']
-    # except:
-    #     timestamp = 9999
-    # asks = msg['asks']
-    # bids = msg['bids']
-
-    # asks_price = np.array([float(x[0]) for x in asks[:15]])
-    # asks_quantity = np.array([float(x[1]) for x in asks[:15]])
-    # numerator = (asks_price * asks_quantity).sum()
-    # asks_amount = (asks_quantity).sum()
-
-    # if asks_amount == 0:
-    #     asks_avg_price = 0
-    #     return 0
-    # else:
-    #     asks_avg_price = numerator/asks_amount
-
-    # bids_price = np.array([float(x[0]) for x in bids[:15]])
-    # bids_quantity = np.array([float(x[1]) for x in bids[:15]])
-    # numerator = (bids_price * bids_quantity).sum()
-    # bids_amount = (bids_quantity).sum()
-
-    # if bids_amount == 0:
-    #     bids_avg_price = 0
-    #     return 0
-    # else:
-    #     bids_avg_price = numerator/bids_amount
-
-    # ,asks_avg_price,bids_avg_price,asks_amount,bids_amount,int(timestamp))
-    db.init_snapshot(db_name="binance", symbol=symbol.lower(
-    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 
 async def main():
@@ -252,8 +227,7 @@ async def main():
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
-    with mp.Pool() as pool:
-        pool.map(get_snapshot, symbols)
+
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
