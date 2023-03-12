@@ -128,7 +128,7 @@ async def message_handler(message, path):
     symbol = path.split("@")[0]
         
     print(symbol)
-    if base_info[symbol.lower()] >= 1200:
+    if base_info[symbol.lower()] >= 50_000:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
@@ -158,11 +158,6 @@ async def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
-        if symbol.lower() == 'ltcusdt':
-            print("IN GET")
-            print(f"U: {message['U']},last: {last_update_id}, u:{message['u']}")
-            print(asks)
-            print(bids)
         await printer(asks, bids, symbol)
     except Exception as e:
         print(e)
