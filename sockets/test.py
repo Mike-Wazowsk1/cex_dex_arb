@@ -94,12 +94,10 @@ def manage_order_book(side, update, symbol):
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
-                print("pop")
                 i -= 1
             else:
                 # quantity is not 0: update the order with new quantity
                 manager[symbol.lower()][side][i] = update
-                print("update")
 
         i += 1
 
@@ -152,6 +150,8 @@ def message_handler(message, path):
                 time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
+
+        base_info[symbol.lower()] += 1
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
