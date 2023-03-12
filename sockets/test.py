@@ -159,7 +159,7 @@ async def message_handler(message, path):
             x[0]), reverse=True))[:15]
         print(asks)
         print(bids)
-        printer(asks, bids, symbol)
+        await printer(asks, bids, symbol)
     except Exception as e:
         print(e)
         if "lastUpdateId" in str(e):
@@ -169,7 +169,7 @@ async def message_handler(message, path):
 
 
 
-def printer(asks, bids, symbol):
+async def printer(asks, bids, symbol):
     """
     Function to process the received messages
     param msg: input message
@@ -234,8 +234,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(
-            callback=message_handler, symbol=symbol)
+        twm.start_depth_socket(callback=message_handler, symbol=symbol)
         time.sleep(3)
     twm.join()
 
