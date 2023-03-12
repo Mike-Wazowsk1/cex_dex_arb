@@ -123,11 +123,13 @@ def process_updates(message, symbol):
     for update in message['a']:
         manage_order_book('asks', update, symbol)
 
+def message_proxy(message, path):
+    asyncio.run(message_handler(message, path))
 
 async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
-
+    print(symbol)
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
@@ -217,7 +219,7 @@ def printer(asks, bids, symbol):
 
 
 async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_handler, symbol=symbol)
+    bm.start_depth_socket(callback=message_proxy, symbol=symbol)
 
 
 def reciver(client, current_batch, global_dict):
@@ -228,7 +230,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(callback=message_handler, symbol=symbol)
+        twm.start_depth_socket(callback=message_proxy, symbol=symbol)
         time.sleep(3)
     twm.join()
 
