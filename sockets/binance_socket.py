@@ -130,7 +130,6 @@ def message_handler(message, path):
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
-                time.sleep(1)
 
         asks = np.array(sorted(
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
@@ -144,7 +143,6 @@ def message_handler(message, path):
 
         print(f"ERROR SYMBOL: {symbol}")
 
-        time.sleep(5)
 
 
 def printer(asks, bids, symbol):
@@ -208,7 +206,6 @@ def reciver(client, current_batch, global_dict):
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
-        time.sleep(1)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
         # time.sleep(30)
@@ -232,7 +229,6 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
-        time.sleep(300)
 
     await client.close_connection()
 if __name__ == "__main__":
