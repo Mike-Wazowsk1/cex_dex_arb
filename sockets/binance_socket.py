@@ -69,7 +69,7 @@ def init_snapshot(symbol):
     """
     Retrieve order book
     """
-    time.sleep(3)
+    time.sleep(10)
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
     CNT += 1
@@ -128,12 +128,12 @@ async def message_handler(message, path):
     symbol = path.split("@")[0]
         
     print(symbol)
-    if base_info[symbol.lower()] >= 50_0000:
-        print(f"Update symbol: {symbol}")
-        manager[symbol.lower()] = init_snapshot(symbol.upper())
-        time.sleep(1)
-        base_info[symbol.lower()] = 0
-        return 
+    # if base_info[symbol.lower()] >= 50_0000:
+    #     print(f"Update symbol: {symbol}")
+    #     manager[symbol.lower()] = init_snapshot(symbol.upper())
+    #     time.sleep(1)
+    #     base_info[symbol.lower()] = 0
+    #     return 
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
