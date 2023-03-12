@@ -17,6 +17,7 @@ import requests
 import numpy as np
 from database.db import DataBase
 
+import random
 
 db = DataBase()
 client = Client()
@@ -69,7 +70,7 @@ def init_snapshot(symbol):
     """
     Retrieve order book
     """
-    time.sleep(10)
+    time.sleep(random.randint(20,30))
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
     CNT += 1
