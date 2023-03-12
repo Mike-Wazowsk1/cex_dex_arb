@@ -29,14 +29,22 @@ info = client.get_exchange_info()
 tables = db.get_all_tables()
 tables = [x[0] for x in tables]
 seen = []
+all_symbols = []
 for table in tables:
-    if table != 'gate':
-        symbols = np.array(db.get_arb_info(table))[:,0]
-        for symbol in symbols:
-            if symbol.upper() not in seen:
-                seen.append(symbol.upper())
+        try:
+            symbols = np.array(db.get_arb_info(table))[:,0]
+            all_symbols.extend(symbols)
+
+        except:
+            continue
+
+
+            for symbol in symbols:
+                if symbol.upper() not in seen:
+                    seen.append(symbol.upper())
 print(len(seen))
 print(seen)
+print(all_symbols)
         
 time.sleep(500)
 # symbols = [x['symbol'] for x in info['symbols']]
