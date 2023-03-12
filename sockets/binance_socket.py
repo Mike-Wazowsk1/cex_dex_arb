@@ -278,6 +278,7 @@ async def main():
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
+        print(current_batch)
         for symbol in current_batch:
             print(symbol)
 
