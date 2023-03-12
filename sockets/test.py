@@ -160,6 +160,9 @@ async def message_handler(message, path):
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
         await printer(asks, bids, symbol)
+        if symbol.lower() == 'ltcusdt':
+            print("IN GET")
+            print(f"U: {message['U']},last: {last_update_id}, u:{message['u']}")
     except Exception as e:
         print(e)
         if "lastUpdateId" in str(e):
