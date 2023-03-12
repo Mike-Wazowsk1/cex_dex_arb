@@ -40,7 +40,7 @@ for table in tables:
             except:
                 continue
 for batch in symbols_array:
-    all_symbols.extend(list(set(batch)&set(all_symbols)))
+    all_symbols.extend(list(set(batch)&set(basic_symbols)))
 print(all_symbols)
 all_symbols = list(set(all_symbols))
 print(all_symbols)
