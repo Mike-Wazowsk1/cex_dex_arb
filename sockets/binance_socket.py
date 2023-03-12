@@ -218,10 +218,15 @@ async def printer(asks, bids, symbol):
 
 
 async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_handler, symbol=symbol)
+    bm.start_depth_socket(callback=message_proxy, symbol=symbol)
+
+def message_proxy(message, path):
+    asyncio.run(message_handler(message, path))
 
 def reciver_proxy(client, current_batch, global_dict):
     asyncio.run(reciver(client, current_batch, global_dict))
+
+
 async def reciver(client, current_batch, global_dict):
     global manager,CNT,base_info
     CNT = 0 
@@ -230,7 +235,7 @@ async def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = await init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(callback=message_handler, symbol=symbol)
+        twm.start_depth_socket(callback=message_proxy, symbol=symbol)
         time.sleep(3)
     twm.join()
 
