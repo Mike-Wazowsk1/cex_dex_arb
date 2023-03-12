@@ -254,7 +254,7 @@ def reciver(client, current_batch, global_dict):
     twm = ThreadedWebsocketManager()
     twm.start()
     print(current_batch)
-    time.sllep(5)
+    time.sleep(5)
     for symbol in current_batch:
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
@@ -283,7 +283,7 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         for symbol in current_batch:
             symbol = [symbol]
-            p = mp.Process(target=reciver, args=[client, current_batch, 0])
+            p = mp.Process(target=reciver, args=[client, symbol, 0])
             p.start()
 
 if __name__ == "__main__":
