@@ -32,10 +32,15 @@ seen = []
 for table in tables:
     if table != 'gate':
         symbols = np.array(db.get_arb_info(table))[:,0]
-        print(symbols)
+        for symbol in symbols:
+            if symbol not in symbols:
+                seen.append(symbol.upper())
+print(len(seen))
+print(seen)
+        
 time.sleep(500)
-symbols = [x['symbol'] for x in info['symbols']]
-symbols = [x for x in set(symbols)]
+# symbols = [x['symbol'] for x in info['symbols']]
+# symbols = [x for x in set(symbols)]
 
 
 def init_snapshot(symbol):
