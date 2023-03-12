@@ -125,6 +125,7 @@ async def process_updates(message, symbol):
 async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
+        
     print(symbol)
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
@@ -140,7 +141,7 @@ async def message_handler(message, path):
 
             #     return
             if message['u'] <= last_update_id:
-                return
+                pass
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
                 await process_updates(message, symbol)
@@ -156,6 +157,11 @@ async def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
+        if symbol.lower() == 'ltcusdt':
+            print("IN GET")
+            print(f"U: {message['U']},last: {last_update_id}, u:{message['u']}")
+            print(asks)
+            print(bids)
         await printer(asks, bids, symbol)
     except Exception as e:
         print(e)
