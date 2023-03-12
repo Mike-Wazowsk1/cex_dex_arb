@@ -173,6 +173,10 @@ async def printer(asks, bids, symbol):
     param msg: input message
     """
     try:
+        if symbol.lower() == 'ltcusdt':
+            print("IN FUNC")
+            print(asks)
+            print(bids)
         asks_price = asks[:,0].astype(np.float64)
         asks_quantity = asks[:,1].astype(np.float64)
         user_max_amount = float(db.get_info_col('max_amount'))

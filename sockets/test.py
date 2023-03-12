@@ -176,6 +176,8 @@ def printer(asks, bids, symbol):
     """
     try:
         if symbol.lower() == 'ltcusdt':
+            print("IN FUNC")
+
             print(asks)
             print(bids)
         asks_price = asks[:,0].astype(np.float64)
