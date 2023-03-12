@@ -60,7 +60,7 @@ for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
-symbols = ["LTCSDDT"]
+symbols = ["LTCUSDT"]
         
 
 
@@ -127,7 +127,7 @@ async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
     print(symbol)
-    
+
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
