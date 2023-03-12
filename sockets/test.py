@@ -128,8 +128,15 @@ def process_updates(message, symbol):
 
 
 def message_handler(message, path):
-    global order_book, manager
+    global order_book, manager,base_info
     symbol = path.split("@")[0]
+    print(base_info[symbol.lower()])
+    if base_info[symbol.lower()] >= 1000:
+        print(f"Update symbol: {symbol}")
+        manager[symbol.lower()] = init_snapshot(symbol.upper())
+        time.sleep(1)
+        base_info[symbol.lower()] = 0
+        return 
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
@@ -218,12 +225,13 @@ async def writer(bm, symbol, loop):
 
 
 def reciver(client, current_batch, global_dict):
-    global manager,CNT
+    global manager,CNT,base_info
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
+        base_info[symbol.lower()] = 0
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
         time.sleep(3)
@@ -233,8 +241,9 @@ def reciver(client, current_batch, global_dict):
 
 
 async def main():
-    global loop, manager
+    global loop, manager,base_info
     manager = {}
+    base_info = {}
 
     client = Client()
 
