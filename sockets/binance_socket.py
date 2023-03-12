@@ -279,9 +279,12 @@ async def main():
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         for symbol in current_batch:
+            print(symbol)
+
             symbol = [symbol]
             p = mp.Process(target=reciver, args=[client, current_batch, 0])
             p.start()
+            time.sleep(5)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
