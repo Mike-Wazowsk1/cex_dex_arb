@@ -218,7 +218,7 @@ async def printer(asks, bids, symbol):
 
 
 async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_proxy, symbol=symbol)
+    bm.start_depth_socket(callback=message_handler, symbol=symbol)
 
 def message_proxy(message, path):
     global loop
@@ -236,7 +236,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(callback=message_proxy, symbol=symbol)
+        twm.start_depth_socket(callback=message_handler, symbol=symbol)
         time.sleep(3)
     twm.join()
 
