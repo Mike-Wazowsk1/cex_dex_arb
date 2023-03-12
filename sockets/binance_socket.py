@@ -103,14 +103,11 @@ def manage_order_book(side, update, symbol):
 
 
 def process_updates(message, symbol):
-    start = time.time()
-
     for update in message['b']:
         manage_order_book('bids', update, symbol)
 
     for update in message['a']:
         manage_order_book('asks', update, symbol)
-    now = time.time()
 
 
 def message_handler(message, path):
@@ -132,9 +129,9 @@ def message_handler(message, path):
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
 
         asks = np.array(sorted(
-            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))
+            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-            x[0]), reverse=True))
+            x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
     except Exception as e:
         print(e)
@@ -154,8 +151,8 @@ def printer(asks, bids, symbol):
         if symbol.lower() == 'ltcusdt':
             print(asks)
             print(bids)
-        asks_price = np.array([float(x[0]) for x in asks[:15]])
-        asks_quantity = np.array([float(x[1]) for x in asks[:15]])
+        asks_price = asks[:,0]
+        asks_quantity = asks[:,1]
         user_max_amount = float(db.get_info_col('max_amount'))
         quantity = 0
         count = 0
@@ -171,8 +168,8 @@ def printer(asks, bids, symbol):
         asks_amount = quantity
         asks_avg_price = mean_price/count
 
-        bids_price = np.array([float(x[0]) for x in bids[:15]])
-        bids_quantity = np.array([float(x[1]) for x in bids[:15]])
+        bids_price = bids[:,0]
+        bids_quantity = bids[:,1]
 
         quantity = 0
         count = 0
@@ -230,7 +227,6 @@ async def main():
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
 
-    await client.close_connection()
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
