@@ -30,7 +30,8 @@ tables = db.get_all_tables()
 tables = [x[0] for x in tables]
 seen = []
 symbols_array = []
-all_symbols = np.array(db.get_arb_info("binance"))[:,0]
+all_symbols = []
+basic_symbols = np.array(db.get_arb_info('binance'))[:,0]
 for table in tables:
         if table !='binance':
             try:
@@ -39,7 +40,7 @@ for table in tables:
             except:
                 continue
 for batch in symbols_array:
-    all_symbols.extend(set(batch)&set(all_symbols))
+    all_symbols.extend(list(set(batch)&set(all_symbols)))
 
 all_symbols = list(set(all_symbols))
 
