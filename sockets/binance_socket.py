@@ -222,7 +222,7 @@ async def writer(bm, symbol, loop):
 
 def message_proxy(message, path):
     global loop
-    loop.create_task(message_handler(message, path))
+    asyncio.run(message_handler(message, path))
 
 # reciver_proxy(client, current_batch, global_dict):
 #     asyncio.run(reciver(client, current_batch, global_dict))
