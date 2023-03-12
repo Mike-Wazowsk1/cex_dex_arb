@@ -206,8 +206,8 @@ def printer(asks, bids, symbol):
         timestamp = time.time()
         bids_avg_price = mean_price/count
 
-        db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
-                     bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
+        # db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
+        #              bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
     except Exception as e:
         print("I'm here")
         print(e)
