@@ -241,9 +241,10 @@ def reciver(client, current_batch, global_dict):
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
-        manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
+        manager[symbol.lower()] = init_snapshot(symbol)
+
     twm.join()
 
 
