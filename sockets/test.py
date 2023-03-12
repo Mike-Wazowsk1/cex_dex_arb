@@ -85,22 +85,19 @@ def manage_order_book(side, update, symbol):
     """
     price, quantity = update
     # price exists: remove or update local order
-    print(len(manager[symbol.lower()][side]))
-    print(update)
-    print(manager[symbol.lower()][side])
-    
     for i in range(0, len(manager[symbol.lower()][side])-1):
-        print(i)
         if price == manager[symbol.lower()][side][i][0]:
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
+                print("pop")
             else:
                 # quantity is not 0: update the order with new quantity
                 manager[symbol.lower()][side][i] = update
+                print("update")
 
     # price not found: add new order
-    if float(quantity) != 0:
+    if float(quantity) != 0:    
         manager[symbol.lower()][side].insert(-1, update)
         if side == 'asks':
             # asks prices in ascendant order
@@ -145,6 +142,8 @@ def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
+        print(asks)
+        print(bids)
         printer(asks, bids, symbol)
     except Exception as e:
         print(e)
