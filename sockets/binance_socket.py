@@ -29,19 +29,23 @@ info = client.get_exchange_info()
 tables = db.get_all_tables()
 tables = [x[0] for x in tables]
 seen = []
-all_symbols = []
+symbols_array = []
+all_symbols = np.array(db.get_arb_info("binance"))[:,0]
 for table in tables:
-        try:
-            symbols = np.array(db.get_arb_info(table))[:,0]
-            all_symbols.extend(symbols)
+        if table !='binance':
+            try:
+                symbols = np.array(db.get_arb_info(table))[:,0]
+                symbols_array.append(symbols)
+            except:
+                continue
+for batch in symbols_array:
+    all_symbols.extend(set(batch)&set(all_symbols))
 
-        except:
-            continue
+all_symbols = list(set(all_symbols))
 
-
-            for symbol in symbols:
-                if symbol.upper() not in seen:
-                    seen.append(symbol.upper())
+for symbol in all_symbols:
+    if symbol.upper() not in seen:
+        seen.append(symbol.upper())
 print(len(seen))
 print(seen)
 print(all_symbols)
