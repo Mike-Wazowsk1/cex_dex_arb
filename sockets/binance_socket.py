@@ -221,7 +221,8 @@ async def writer(bm, symbol, loop):
     bm.start_depth_socket(callback=message_proxy, symbol=symbol)
 
 def message_proxy(message, path):
-    asyncio.run(message_handler(message, path))
+    global loop
+    loop.create_task(message_handler(message, path))
 
 def reciver_proxy(client, current_batch, global_dict):
     asyncio.run(reciver(client, current_batch, global_dict))
