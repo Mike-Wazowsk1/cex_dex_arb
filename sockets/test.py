@@ -60,7 +60,7 @@ for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
-symbols = ["ETHUSDT"]
+symbols = ["LTCUSDDT"]
         
 
 
