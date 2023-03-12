@@ -79,7 +79,7 @@ def init_snapshot(symbol):
     return msg
 
 
-def manage_order_book(side, update, symbol):
+async def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
@@ -117,15 +117,15 @@ def manage_order_book(side, update, symbol):
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
-def process_updates(message, symbol):
+async def process_updates(message, symbol):
     for update in message['b']:
-        manage_order_book('bids', update, symbol)
+        await manage_order_book('bids', update, symbol)
 
     for update in message['a']:
-        manage_order_book('asks', update, symbol)
+        await manage_order_book('asks', update, symbol)
 
 
-def message_handler(message, path):
+async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
     print(base_info[symbol.lower()])
@@ -142,7 +142,7 @@ def message_handler(message, path):
                 return
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                process_updates(message, symbol)
+                await process_updates(message, symbol)
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
