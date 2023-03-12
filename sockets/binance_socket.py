@@ -84,19 +84,28 @@ def manage_order_book(side, update, symbol):
     """
     price, quantity = update
     # price exists: remove or update local order
-    
-    for i in range(0, len(manager[symbol.lower()][side])-1):
-        if price == manager[symbol.lower()][side][i][0]:
+    i = 0
+    price_found = False
+    while i < len(manager[symbol.lower()][side]):
+    # for i in range(0, len(manager[symbol.lower()][side])-1):
+        if float(price) == float(manager[symbol.lower()][side][i][0]):
+            price_found = True
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
+                print("pop")
+                i -= 1
             else:
                 # quantity is not 0: update the order with new quantity
                 manager[symbol.lower()][side][i] = update
+                print("update")
+
+        i += 1
 
     # price not found: add new order
-    if float(quantity) != 0:
-        manager[symbol.lower()][side].insert(-1, update)
+    if float(quantity) != 0:   
+        if not price_found: 
+            manager[symbol.lower()][side].insert(-1, update)
         if side == 'asks':
             # asks prices in ascendant order
             manager[symbol.lower()][side] = sorted(
