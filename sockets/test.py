@@ -129,7 +129,7 @@ def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
     print(base_info[symbol.lower()])
-    if base_info[symbol.lower()] >= 1000:
+    if base_info[symbol.lower()] >= 20:
         print(f"Update symbol: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol.upper())
         time.sleep(1)
