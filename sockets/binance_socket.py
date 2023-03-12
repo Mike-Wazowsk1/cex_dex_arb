@@ -64,15 +64,15 @@ symbols = seen
 
 
 def init_snapshot(symbol):
-    global COUNT
+    global CNT
     print("REST request")
     """
     Retrieve order book
     """
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
-    COUNT += 1
-    if COUNT >= 1200:
+    CNT += 1
+    if CNT >= 1200:
         time.sleep(30)
         COUNT = 0 
     return msg
@@ -158,8 +158,8 @@ def printer(asks, bids, symbol):
         if symbol.lower() == 'ltcusdt':
             print(asks)
             print(bids)
-        asks_price = asks[:,0]
-        asks_quantity = asks[:,1]
+        asks_price = asks[:,0].astype(np.float64)
+        asks_quantity = asks[:,1].astype(np.float64)
         user_max_amount = float(db.get_info_col('max_amount'))
         quantity = 0
         count = 0
@@ -175,8 +175,8 @@ def printer(asks, bids, symbol):
         asks_amount = quantity
         asks_avg_price = mean_price/count
 
-        bids_price = bids[:,0]
-        bids_quantity = bids[:,1]
+        bids_price = bids[:,0].astype(np.float64)
+        bids_quantity = bids[:,1].astype(np.float64)
 
         quantity = 0
         count = 0
@@ -205,8 +205,8 @@ async def writer(bm, symbol, loop):
 
 
 def reciver(client, current_batch, global_dict):
-    global manager,COUNT
-    COUNT = 0 
+    global manager,CNT
+    CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
