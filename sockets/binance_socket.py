@@ -127,6 +127,7 @@ def process_updates(message, symbol):
 def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
+    print(symbol)
 
     if base_info[symbol.lower()] >= 5:
         print(f"Update symbol: {symbol}")
@@ -140,8 +141,8 @@ def message_handler(message, path):
             if message['u'] <= last_update_id:
                 return
             if message['U'] <= last_update_id + 1 <= message['u']:
-                manager[symbol.lower()]['lastUpdateId'] = message['u']
                 process_updates(message, symbol)
+                manager[symbol.lower()]['lastUpdateId'] = message['u']
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
@@ -226,8 +227,7 @@ def reciver(client, current_batch, global_dict):
     for symbol in current_batch:
         manager[symbol.lower()] = init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(
-            callback=message_handler, symbol=symbol)
+        twm.start_depth_socket(callback=message_handler, symbol=symbol)
         time.sleep(3)
     twm.join()
 
