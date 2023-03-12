@@ -141,6 +141,7 @@ def message_handler(message, path):
             if message['u'] <= last_update_id:
                 return
             if message['U'] <= last_update_id + 1 <= message['u']:
+                print(f"TO DB: {symbol}")
                 process_updates(message, symbol)
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
             else:
