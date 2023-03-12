@@ -1,4 +1,5 @@
 import asyncio
+from itertools import count
 import json
 import logging
 from binance import AsyncClient, BinanceSocketManager
@@ -63,12 +64,17 @@ symbols = seen
 
 
 def init_snapshot(symbol):
+    global COUNT
     print("REST request")
     """
     Retrieve order book
     """
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
     msg = requests.get(base_url).json()
+    COUNT += 1
+    if COUNT >= 1200:
+        time.sleep(30)
+        COUNT = 0 
     return msg
 
 
@@ -125,6 +131,7 @@ def message_handler(message, path):
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
+                time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
 
@@ -198,7 +205,8 @@ async def writer(bm, symbol, loop):
 
 
 def reciver(client, current_batch, global_dict):
-    global manager
+    global manager,COUNT
+    COUNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
