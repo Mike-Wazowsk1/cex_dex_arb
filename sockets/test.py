@@ -60,6 +60,7 @@ for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
+symbols = ["SUSHIUSDT"]
         
 
 
@@ -84,8 +85,12 @@ def manage_order_book(side, update, symbol):
     """
     price, quantity = update
     # price exists: remove or update local order
+    print(len(manager[symbol.lower()][side]))
+    print(update)
+    print(manager[symbol.lower()][side])
     
     for i in range(0, len(manager[symbol.lower()][side])-1):
+        print(i)
         if price == manager[symbol.lower()][side][i][0]:
             # quantity is 0: remove
             if float(quantity) == 0:
