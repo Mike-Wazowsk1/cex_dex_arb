@@ -74,7 +74,7 @@ def init_snapshot(symbol):
     CNT += 1
     if CNT >= 1200:
         time.sleep(30)
-        COUNT = 0 
+        CNT = 0 
     return msg
 
 
@@ -213,7 +213,7 @@ def reciver(client, current_batch, global_dict):
         manager[symbol.lower()] = init_snapshot(symbol)
         twm.start_depth_socket(
             callback=message_handler, symbol=symbol)
-        # time.sleep(30)
+        time.sleep(3)
     twm.join()
 
 
@@ -234,6 +234,7 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         p.start()
+        time.sleep(5)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
