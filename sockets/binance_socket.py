@@ -63,7 +63,7 @@ symbols = seen
         
 
 
-def init_snapshot(symbol):
+async def init_snapshot(symbol):
     global CNT
     print("REST request")
     """
@@ -78,7 +78,7 @@ def init_snapshot(symbol):
     return msg
 
 
-def manage_order_book(side, update, symbol):
+async def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
@@ -116,15 +116,14 @@ def manage_order_book(side, update, symbol):
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
-def process_updates(message, symbol):
+async def process_updates(message, symbol):
     for update in message['b']:
-        manage_order_book('bids', update, symbol)
+        await manage_order_book('bids', update, symbol)
 
     for update in message['a']:
-        manage_order_book('asks', update, symbol)
+        await manage_order_book('asks', update, symbol)
 
-def message_proxy(message, path):
-    asyncio.run(message_handler(message, path))
+
 
 async def message_handler(message, path):
     global order_book, manager,base_info
@@ -144,12 +143,12 @@ async def message_handler(message, path):
 
             #     return
             if last_update_id:
-                process_updates(message, symbol)
+                await process_updates(message, symbol)
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
             else:
                 print(
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
-                manager[symbol.lower()] = init_snapshot(symbol.upper())
+                manager[symbol.lower()] = await init_snapshot(symbol.upper())
                 time.sleep(1)
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
@@ -159,7 +158,7 @@ async def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
-        printer(asks, bids, symbol)
+        await printer(asks, bids, symbol)
     except Exception as e:
         print(e)
         if "lastUpdateId" in str(e):
@@ -170,7 +169,7 @@ async def message_handler(message, path):
 
 
 
-def printer(asks, bids, symbol):
+async def printer(asks, bids, symbol):
     """
     Function to process the received messages
     param msg: input message
@@ -219,18 +218,18 @@ def printer(asks, bids, symbol):
 
 
 async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_proxy, symbol=symbol)
+    bm.start_depth_socket(callback=message_handler, symbol=symbol)
 
 
-def reciver(client, current_batch, global_dict):
+async def reciver(client, current_batch, global_dict):
     global manager,CNT,base_info
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
-        manager[symbol.lower()] = init_snapshot(symbol)
+        manager[symbol.lower()] = await init_snapshot(symbol)
         base_info[symbol.lower()] = 0
-        twm.start_depth_socket(callback=message_proxy, symbol=symbol)
+        twm.start_depth_socket(callback=message_handler, symbol=symbol)
         time.sleep(3)
     twm.join()
 
