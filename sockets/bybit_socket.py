@@ -13,6 +13,7 @@ db = DataBase()
 
 def handle_orderbook(message):
     if message['type'] == 'data':
+        
         data = message['data']
         symbol = data['s']
         timestamp = data['t']
@@ -95,6 +96,10 @@ def handle_orderbook(message):
 
         bids_amount = quantity
         bids_avg_price = mean_price/bids_amount
+        if symbol.lower() == 'ltcusdt':
+            print(asks_price)
+            print(bids_price)
+            
 
         db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
                      bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
