@@ -126,6 +126,28 @@ for symbol in symbols:
     db.init_snapshot(db_name="bybit", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 print(f"LEN: {len(symbols)}")
+tables = db.get_all_tables()
+tables = [x[0] for x in tables]
+seen = []
+symbols_array = []
+all_symbols = []
+basic_symbols = np.array(db.get_arb_info('bybit'))[:,0]
+for table in tables:
+        if table !='bybit':
+            try:
+                symbols = np.array(db.get_arb_info(table))[:,0]
+                symbols_array.append(symbols)
+            except:
+                continue
+for batch in symbols_array:
+    all_symbols.extend(list(set(batch)&set(basic_symbols)))
+all_symbols = list(set(all_symbols))
+print(f"LEN: {len(symbols)}")
+
+for symbol in all_symbols:
+    if symbol.upper() not in seen:
+        seen.append(symbol.upper())
+symbols = seen
 for symbol in symbols:
     try:
         mp.Process(target=proxy,args=[handle_orderbook, symbol]).start()
