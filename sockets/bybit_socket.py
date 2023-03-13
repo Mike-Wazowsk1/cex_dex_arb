@@ -1,3 +1,4 @@
+from multiprocessing import Process
 from threading import Thread
 from pybit import spot
 # from pybit import
@@ -18,8 +19,6 @@ def handle_orderbook(message):
         
         data = message['data']
         symbol = data['s']
-        print(symbol)
-
         timestamp = data['t']
         bids = sorted(data['b'][:15],reverse=True)
         asks = sorted(data['a'][:15])
@@ -62,8 +61,6 @@ def handle_orderbook(message):
     if message['type'] == "snapshot":
         data = message['data']
         symbol = data['s']
-        print(symbol)
-
         timestamp = data['t']
         bids = data['b'][:15]
         asks = data['a'][:15]
@@ -106,9 +103,7 @@ def handle_orderbook(message):
 
         db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
                      bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
-    if symbol.lower() == 'ltcusdt':
-        print(asks_price)
-        print(bids_price)
+
         
 
 def proxy(handle_orderbook, symbol):
@@ -122,7 +117,6 @@ def proxy(handle_orderbook, symbol):
 ws_spot = spot.WebSocket(testnet=False)
 http = spot.HTTP()
 symbols = [x['s'] for x in http.get_tickers()['result']['list']]
-print(symbols)
 for symbol in symbols:
     db.init_snapshot(db_name="bybit", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
@@ -149,10 +143,9 @@ for symbol in all_symbols:
         seen.append(symbol.upper())
 symbols = seen
 print(f"LEN: {len(symbols)}")
-time.sleep(10)
 for symbol in symbols:
     try:
-        t = Thread(target=proxy,args=[handle_orderbook, symbol])
+        t = Process(target=proxy,args=[handle_orderbook, symbol])
         t.setDaemon(True)
         t.start()
         time.sleep(5)

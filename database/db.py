@@ -372,7 +372,6 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
                 password=DB.password,
 
             )
-
             self.cursor = self.conn.cursor(cursor_factory=DictCursor)
             self.conn.autocommit = True
             self.cursor.execute(q)

@@ -137,7 +137,6 @@ async def message_handler(message, path):
     global order_book, manager,base_info
     symbol = path.split("@")[0]
         
-    print(symbol)
     # if base_info[symbol.lower()] >= 50_0000:
     #     print(f"Update symbol: {symbol}")
     #     manager[symbol.lower()] = init_snapshot(symbol.upper())
