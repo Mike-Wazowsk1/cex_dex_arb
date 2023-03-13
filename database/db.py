@@ -280,7 +280,7 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             return data
 
     def get_info_col(self, col):
-        q = f"""SELECT {col} FROM info returning {col}"""
+        q = f"""SELECT {col} FROM info returning info"""
         try:
             self.conn = psycopg2.connect(
                 host=DB.host,
