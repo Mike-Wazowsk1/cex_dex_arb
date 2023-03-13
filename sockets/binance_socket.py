@@ -75,7 +75,7 @@ def init_snapshot(symbol,no_wait=False):
         """
         Retrieve order book
         """
-        time.sleep(random.randint(0,5))
+        # time.sleep(random.randint(0,5))
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         print(f"REST request: {symbol}")
@@ -161,10 +161,10 @@ async def message_handler(message, path):
 
             else:
                 print(
-                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
+                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
-                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
+                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
 
 
         asks = np.array(sorted(
@@ -276,6 +276,8 @@ async def main():
             # symbol = [symbol]
             p = mp.Process(target=reciver, args=[client, symbol, 0])
             time.sleep(5)
+            time.sleep(random.randint(0,5))
+
             p.start()
 
 if __name__ == "__main__":
