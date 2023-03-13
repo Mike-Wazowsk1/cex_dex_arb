@@ -146,7 +146,7 @@ print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
         t = Process(target=proxy,args=[handle_orderbook, symbol])
-        t.setDaemon(True)
+        # t.setDaemon(True)
         t.start()
         time.sleep(5)
     except:
