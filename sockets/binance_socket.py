@@ -75,7 +75,7 @@ def init_snapshot(symbol,no_wait=False):
         """
         Retrieve order book
         """
-        time.sleep(random.randint(30,60))
+        time.sleep(random.randint(0,5))
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         print(f"REST request: {symbol}")
@@ -244,7 +244,6 @@ def reciver(client, symbol, global_dict):
     base_info[symbol.lower()] = 0
     twm.start_depth_socket(callback=message_handler, symbol=symbol)
     print(f"Reciver: {symbol}")
-    time.sleep(random.randint(1,5))
     manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
     twm.join()
 
@@ -268,6 +267,7 @@ async def main():
         for symbol in current_batch:
             # symbol = [symbol]
             p = mp.Process(target=reciver, args=[client, symbol, 0])
+            time.sleep(5)
             p.start()
 
 if __name__ == "__main__":
