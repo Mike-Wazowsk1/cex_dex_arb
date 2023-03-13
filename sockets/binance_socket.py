@@ -144,28 +144,30 @@ async def message_handler(message, path):
     #     time.sleep(1)
     #     base_info[symbol.lower()] = 0
     #     return 
-    # try:
-    if "depthUpdate" in json.dumps(message):
-        last_update_id = manager[symbol.lower()]['lastUpdateId']
-        if message['u'] <= last_update_id:
-            pass
-        elif message['U'] <= last_update_id + 1 <= message['u']:
-            manager[symbol.lower()]['lastUpdateId'] = message['u']
-            await process_updates(message, symbol)
-
-        else:
-            print(
-                f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
-            manager[symbol.lower()] = init_snapshot(symbol.upper())
+    try:
+        if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
-            print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
+            if message['u'] <= last_update_id:
+                pass
+            elif message['U'] <= last_update_id + 1 <= message['u']:
+                manager[symbol.lower()]['lastUpdateId'] = message['u']
+                await process_updates(message, symbol)
+
+            else:
+                print(
+                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
+                manager[symbol.lower()] = init_snapshot(symbol.upper())
+                last_update_id = manager[symbol.lower()]['lastUpdateId']
+                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
 
 
-    asks = np.array(sorted(
-        manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
-    bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-        x[0]), reverse=True))[:15]
-    await printer(asks, bids, symbol)
+        asks = np.array(sorted(
+            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
+        bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+            x[0]), reverse=True))[:15]
+        await printer(asks, bids, symbol)
+    except KeyError as e:
+        print(f"Symbol {symbol} not handeled")
     # except Exception as e:
     #     print(e)
   
