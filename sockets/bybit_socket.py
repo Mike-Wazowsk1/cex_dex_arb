@@ -5,6 +5,7 @@ import requests
 import json
 import pickle as pkl
 import numpy as np
+import multiprocessing as mp
 
 
 from database.db import DataBase
@@ -118,7 +119,7 @@ print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
         print(symbol)
-        ws_spot.orderbook_stream(handle_orderbook, symbol,)
+        mp.Process(target=ws_spot.orderbook_stream,args=[handle_orderbook, symbol])
     except:
         print("can't")
         print(symbol)
