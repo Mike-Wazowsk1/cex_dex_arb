@@ -17,6 +17,8 @@ def handle_orderbook(message):
         
         data = message['data']
         symbol = data['s']
+        print(symbol)
+
         timestamp = data['t']
         bids = sorted(data['b'][:15],reverse=True)
         asks = sorted(data['a'][:15])
@@ -59,6 +61,8 @@ def handle_orderbook(message):
     if message['type'] == "snapshot":
         data = message['data']
         symbol = data['s']
+        print(symbol)
+
         timestamp = data['t']
         bids = data['b'][:15]
         asks = data['a'][:15]
