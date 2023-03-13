@@ -1,3 +1,4 @@
+from threading import Thread
 from pybit import spot
 # from pybit import
 import time
@@ -151,12 +152,14 @@ print(f"LEN: {len(symbols)}")
 time.sleep(10)
 for symbol in symbols:
     try:
-        mp.Process(target=proxy,args=[handle_orderbook, symbol]).start()
+        t = Thread(target=proxy,args=[handle_orderbook, symbol])
+        t.setDaemon(True)
+        t.start()
         time.sleep(5)
     except:
         print("can't")
         print(symbol)
 
 
-# while True:
-#     time.sleep(0.1)
+while True:
+    time.sleep(0.1)
