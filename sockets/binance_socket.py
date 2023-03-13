@@ -67,21 +67,21 @@ symbols = seen
 def init_snapshot(symbol,no_wait=False):
     
     global CNT, base_info
-    if base_info.get(symbol.lower(),False) == True:
-        return manager[symbol.lower()]
+    # if base_info.get(symbol.lower(),False) == True:
+    #     return manager[symbol.lower()]
     
-    if base_info.get(symbol.lower(),False) == False:
-        base_info[symbol.lower()] = True
-        """
-        Retrieve order book
-        """
-        # time.sleep(random.randint(0,5))
-        base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
-        msg = requests.get(base_url).json()
-        print(f"REST request: {symbol}")
+    # if base_info.get(symbol.lower(),False) == False:
+    base_info[symbol.lower()] = True
+    """
+    Retrieve order book
+    """
+    # time.sleep(random.randint(0,5))
+    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
+    msg = requests.get(base_url).json()
+    print(f"REST request: {symbol}")
 
-        base_info[symbol.lower()] = False
-        return msg
+    base_info[symbol.lower()] = False
+    return msg
 
 
 
