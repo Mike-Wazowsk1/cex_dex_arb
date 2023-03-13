@@ -274,7 +274,9 @@ async def main():
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         for symbol in current_batch:
             # symbol = [symbol]
-            p = mp.Process(target=reciver, args=[client, symbol, 0])
+            p = th.Thread(target=reciver, args=[client, symbol, 0])
+            p.setDaemon(True)
+            p.start()
             time.sleep(5)
             time.sleep(random.randint(0,5))
 
