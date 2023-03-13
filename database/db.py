@@ -280,37 +280,21 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             return data
 
     def get_info_col(self, col):
-        q = f"""SELECT {col} FROM info returning info"""
-        try:
-            self.conn = psycopg2.connect(
-                host=DB.host,
-                database=DB.dbname,
-                user=DB.user,
-                password=DB.password)
+        q = f"""SELECT {col} FROM info"""
+        self.conn = psycopg2.connect(
+            host=DB.host,
+            database=DB.dbname,
+            user=DB.user,
+            password=DB.password)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
-            self.cursor.execute(q)
-            data = self.cursor.fetchall()
-            self.cursor.close()
-            self.conn.close()
-            return data[0][0]
-        except:
-            self.conn = psycopg2.connect(
-                host=DB.host,
-                database=DB.dbname,
-                user=DB.user,
-                password=DB.password,
-
-            )
-
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
-            self.cursor.execute(q)
-            data = self.cursor.fetchall()
-            self.cursor.close()
-            self.conn.close()
-            return data[0][0]
+        self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+        self.conn.autocommit = True
+        self.cursor.execute(q)
+        data = self.cursor.fetchall()
+        self.cursor.close()
+        self.conn.close()
+        return data[0][0]
+  
 
     def update_info(self, col, val):
         q = f"UPDATE info SET {col} = {val}"
