@@ -1,7 +1,5 @@
-import code
 import psycopg2
 from psycopg2.extras import DictCursor
-import datetime
 from config import config
 from decimal import Decimal
 DB = config.DB
@@ -282,7 +280,7 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             return data
 
     def get_info_col(self, col):
-        q = f"""SELECT {col} FROM info"""
+        q = f"""SELECT {col} FROM info returning {col}"""
         try:
             self.conn = psycopg2.connect(
                 host=DB.host,
