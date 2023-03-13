@@ -142,12 +142,13 @@ for table in tables:
 for batch in symbols_array:
     all_symbols.extend(list(set(batch)&set(basic_symbols)))
 all_symbols = list(set(all_symbols))
-print(f"LEN: {len(symbols)}")
 
 for symbol in all_symbols:
     if symbol.upper() not in seen:
         seen.append(symbol.upper())
 symbols = seen
+print(f"LEN: {len(symbols)}")
+time.sleep(10)
 for symbol in symbols:
     try:
         mp.Process(target=proxy,args=[handle_orderbook, symbol]).start()
