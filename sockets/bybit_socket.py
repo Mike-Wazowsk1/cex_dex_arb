@@ -118,8 +118,7 @@ for symbol in symbols:
 print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
-        print(symbol)
-        mp.Process(target=ws_spot.orderbook_stream,args=[handle_orderbook, symbol])
+        mp.Process(target=ws_spot.orderbook_stream,args=[handle_orderbook, symbol]).start()
     except:
         print("can't")
         print(symbol)
