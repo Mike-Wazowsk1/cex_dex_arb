@@ -110,6 +110,11 @@ def handle_orderbook(message):
         print(bids_price)
         
 
+def proxy(handle_orderbook, symbol):
+    ws_spot.orderbook_stream(handle_orderbook, symbol)
+    while True:
+        time.sleep(1)
+        
 
 # Similarly, if you want to listen to the WebSockets of other markets:
 ws_spot = spot.WebSocket(testnet=False)
@@ -128,5 +133,5 @@ for symbol in symbols:
         print(symbol)
 
 
-while True:
-    time.sleep(0.1)
+# while True:
+#     time.sleep(0.1)
