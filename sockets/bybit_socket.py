@@ -1,3 +1,4 @@
+#type: ignore
 from multiprocessing import Process
 from threading import Thread
 from pybit import spot
@@ -8,6 +9,7 @@ import json
 import pickle as pkl
 import numpy as np
 import multiprocessing as mp
+from random import randint
 
 
 from database.db import DataBase
@@ -16,11 +18,11 @@ db = DataBase()
 
 def handle_orderbook(message):
     if message['type'] == 'data':
-        
+
         data = message['data']
         symbol = data['s']
         timestamp = data['t']
-        bids = sorted(data['b'][:15],reverse=True)
+        bids = sorted(data['b'][:15], reverse=True)
         asks = sorted(data['a'][:15])
         asks_price = np.array([float(x[0]) for x in asks[:15]])
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
@@ -68,7 +70,6 @@ def handle_orderbook(message):
         asks_quantity = np.array([float(x[1]) for x in asks[:15]])
         user_max_amount = float(db.get_info_col('max_amount'))
 
-
         quantity = 0
         count = 0
         mean_price = 0
@@ -100,18 +101,16 @@ def handle_orderbook(message):
         bids_amount = quantity
         bids_avg_price = mean_price/bids_amount
 
-
         db.update_db(db_name="bybit", symbol=symbol.lower(), asks_price=asks_avg_price,
                      bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
 
-        
 
 def proxy(handle_orderbook, symbol):
     ws_spot = spot.WebSocket(testnet=False)
     ws_spot.orderbook_stream(handle_orderbook, symbol)
     while True:
-        time.sleep(1)
-        
+        time.sleep(0.1)
+
 
 # Similarly, if you want to listen to the WebSockets of other markets:
 ws_spot = spot.WebSocket(testnet=False)
@@ -126,16 +125,16 @@ tables = [x[0] for x in tables]
 seen = []
 symbols_array = []
 all_symbols = []
-basic_symbols = np.array(db.get_arb_info('bybit'))[:,0]
+basic_symbols = np.array(db.get_arb_info('bybit'))[:, 0]
 for table in tables:
-        if table !='bybit':
-            try:
-                symbols = np.array(db.get_arb_info(table))[:,0]
-                symbols_array.append(symbols)
-            except:
-                continue
+    if table != 'bybit':
+        try:
+            symbols = np.array(db.get_arb_info(table))[:, 0]
+            symbols_array.append(symbols)
+        except:
+            continue
 for batch in symbols_array:
-    all_symbols.extend(list(set(batch)&set(basic_symbols)))
+    all_symbols.extend(list(set(batch) & set(basic_symbols)))
 all_symbols = list(set(all_symbols))
 
 for symbol in all_symbols:
@@ -145,10 +144,10 @@ symbols = seen
 print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
-        t = Process(target=proxy,args=[handle_orderbook, symbol])
+        t = Process(target=proxy, args=[handle_orderbook, symbol])
         # t.setDaemon(True)
         t.start()
-        time.sleep(5)
+        time.sleep(randint(5, 10))
     except:
         print("can't")
         print(symbol)
