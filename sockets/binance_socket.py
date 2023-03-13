@@ -276,7 +276,7 @@ async def main():
             # symbol = [symbol]
             p = th.Thread(target=reciver, args=[client, symbol, 0])
             p.setDaemon(True)
-            p.start()
+            # p.start()
             time.sleep(5)
             time.sleep(random.randint(0,5))
 
