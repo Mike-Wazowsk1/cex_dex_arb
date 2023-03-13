@@ -80,7 +80,6 @@ def init_snapshot(symbol,no_wait=False):
         msg = requests.get(base_url).json()
         print(f"REST request: {symbol}")
 
-        CNT += 1
         base_info[symbol.lower()] = False
         return msg
 
@@ -134,8 +133,16 @@ async def process_updates(message, symbol):
 
 
 async def message_handler(message, path):
-    global order_book, manager,base_info
+    global order_book, manager,base_info, counter
     symbol = path.split("@")[0]
+    counter[symbol.lower()] += 1
+    if counter[symbol.lower()] >= 1000:
+        print(f"reachs limit: {symbol}")
+        manager[symbol.lower()] = init_snapshot(symbol.upper())
+        counter[symbol.lower()] = 0
+        return 
+
+
         
     # if base_info[symbol.lower()] >= 50_0000:
     #     print(f"Update symbol: {symbol}")
@@ -235,12 +242,13 @@ def message_proxy(message, path):
 
 
 def reciver(client, symbol, global_dict):
-    global manager,CNT,base_info
+    global manager,CNT,base_info, counter
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
     # for symbol in current_batch:
     base_info[symbol.lower()] = 0
+    counter[symbol.lower()] = 0
     twm.start_depth_socket(callback=message_handler, symbol=symbol)
     print(f"Reciver: {symbol}")
     manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
@@ -250,9 +258,10 @@ def reciver(client, symbol, global_dict):
 
 
 async def main():
-    global loop, manager, base_info
+    global loop, manager, base_info, counter
     manager = {}
     base_info = {}
+    counter = {}
 
     client = Client()
 
