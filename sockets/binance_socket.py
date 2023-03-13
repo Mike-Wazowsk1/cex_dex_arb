@@ -65,7 +65,9 @@ symbols = seen
 
 
 def init_snapshot(symbol,no_wait=False):
+    
     global CNT, base_info
+    time.sleep(random.randint(1,10))
     if base_info.get(symbol.lower(),False) == True:
         return manager[symbol.lower()]
     
@@ -142,35 +144,36 @@ async def message_handler(message, path):
     #     time.sleep(1)
     #     base_info[symbol.lower()] = 0
     #     return 
-    try:
-        if "depthUpdate" in json.dumps(message):
+    # try:
+    if "depthUpdate" in json.dumps(message):
+        last_update_id = manager[symbol.lower()]['lastUpdateId']
+        if message['u'] <= last_update_id:
+            pass
+        elif message['U'] <= last_update_id + 1 <= message['u']:
+            manager[symbol.lower()]['lastUpdateId'] = message['u']
+            await process_updates(message, symbol)
+
+        else:
+            print(
+                f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
+            manager[symbol.lower()] = init_snapshot(symbol.upper())
             last_update_id = manager[symbol.lower()]['lastUpdateId']
-            if message['u'] <= last_update_id:
-                pass
-            elif message['U'] <= last_update_id + 1 <= message['u']:
-                manager[symbol.lower()]['lastUpdateId'] = message['u']
-                await process_updates(message, symbol)
-
-            else:
-                print(
-                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']}")
-                manager[symbol.lower()] = init_snapshot(symbol.upper())
-                last_update_id = manager[symbol.lower()]['lastUpdateId']
-                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
+            print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']}")
 
 
-        asks = np.array(sorted(
-            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
-        bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-            x[0]), reverse=True))[:15]
-        await printer(asks, bids, symbol)
-    except Exception as e:
-        print(e)
-        if "lastUpdateId" in str(e):
-            print(manager[symbol.lower()])
+    asks = np.array(sorted(
+        manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
+    bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+        x[0]), reverse=True))[:15]
+    await printer(asks, bids, symbol)
+    # except Exception as e:
+    #     print(e)
+  
+    #     print(manager[symbol.lower()])
 
 
-        print(f"ERROR SYMBOL: {symbol}")
+    #     print(f"ERROR SYMBOL: {symbol}")
+    #     await asyncio.sleep(10)
 
 
 
@@ -179,47 +182,44 @@ async def printer(asks, bids, symbol):
     Function to process the received messages
     param msg: input message
     """
-    try:
-        asks_price = asks[:,0].astype(np.float64)
-        asks_quantity = asks[:,1].astype(np.float64)
-        user_max_amount = float(db.get_info_col('max_amount'))
-        quantity = 0
-        count = 0
-        mean_price = 0
-        usdt_quantity = 0
-        for i, val in enumerate(asks_quantity):
-            if usdt_quantity < user_max_amount:
-                quantity += val
-                mean_price += asks_price[i]
-                usdt_quantity += quantity * asks_price[i]
-                count += 1
+    asks_price = asks[:,0].astype(np.float64)
+    asks_quantity = asks[:,1].astype(np.float64)
+    user_max_amount = float(db.get_info_col('max_amount'))
+    quantity = 0
+    count = 0
+    mean_price = 0
+    usdt_quantity = 0
+    for i, val in enumerate(asks_quantity):
+        if usdt_quantity < user_max_amount:
+            quantity += val
+            mean_price += asks_price[i]
+            usdt_quantity += quantity * asks_price[i]
+            count += 1
 
-        asks_amount = quantity
-        asks_avg_price = mean_price/count
+    asks_amount = quantity
+    asks_avg_price = mean_price/count
 
-        bids_price = bids[:,0].astype(np.float64)
-        bids_quantity = bids[:,1].astype(np.float64)
+    bids_price = bids[:,0].astype(np.float64)
+    bids_quantity = bids[:,1].astype(np.float64)
 
-        quantity = 0
-        count = 0
-        mean_price = 0
-        usdt_quantity = 0
-        for i, val in enumerate(bids_quantity):
-            if usdt_quantity < user_max_amount:
-                quantity += val
-                mean_price += bids_price[i]
-                usdt_quantity += quantity * bids_price[i]
-                count += 1
+    quantity = 0
+    count = 0
+    mean_price = 0
+    usdt_quantity = 0
+    for i, val in enumerate(bids_quantity):
+        if usdt_quantity < user_max_amount:
+            quantity += val
+            mean_price += bids_price[i]
+            usdt_quantity += quantity * bids_price[i]
+            count += 1
 
-        bids_amount = quantity
-        timestamp = time.time()
-        bids_avg_price = mean_price/count
+    bids_amount = quantity
+    timestamp = time.time()
+    bids_avg_price = mean_price/count
 
-        db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=round(asks_avg_price,10),
-                     bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
-    except Exception as e:
-        print("I'm here")
-        print(e)
+    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=round(asks_avg_price,10),
+                    bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
+
 
 
 async def writer(bm, symbol, loop):
@@ -242,8 +242,8 @@ def reciver(client, symbol, global_dict):
     base_info[symbol.lower()] = 0
     twm.start_depth_socket(callback=message_handler, symbol=symbol)
     print(f"Reciver: {symbol}")
+    time.sleep(random.randint(1,5))
     manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
-    time.sleep(10)
     twm.join()
 
 
