@@ -345,6 +345,8 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
+            self.cursor.close()
+            self.conn.close()
 
 
     def get_command(self,symbol,db_name):
