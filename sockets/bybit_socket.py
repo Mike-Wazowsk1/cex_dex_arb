@@ -147,7 +147,7 @@ for symbol in symbols:
         t = Process(target=proxy, args=[handle_orderbook, symbol])
         # t.setDaemon(True)
         t.start()
-        time.sleep(randint(5, 10))
+        time.sleep(randint(5, 30))
     except:
         print("can't")
         print(symbol)
