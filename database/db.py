@@ -291,14 +291,14 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
     def get_info_col(self, col):
         q = f"""SELECT {col} FROM info"""
         try:
-            self.conn = psycopg2.connect(
-                host=DB.host,
-                database=DB.dbname,
-                user=DB.user,
-                password=DB.password)
+            # self.conn = psycopg2.connect(
+            #     host=DB.host,
+            #     database=DB.dbname,
+            #     user=DB.user,
+            #     password=DB.password)
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
+            # self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            # self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
             #self.cursor.close()
@@ -341,13 +341,13 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
         except:
             #self.cursor.close()
             #self.conn.close()
-            self.conn = psycopg2.connect(host=DB.host,
-                                         database=DB.dbname,
-                                         user=DB.user,
-                                         password=DB.password, )
+            # self.conn = psycopg2.connect(host=DB.host,
+            #                              database=DB.dbname,
+            #                              user=DB.user,
+            #                              password=DB.password, )
 
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
+            # self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            # self.conn.autocommit = True
             self.cursor.execute(q)
             self.conn.commit()
             #self.cursor.close()
@@ -372,15 +372,15 @@ WHERE table_schema = 'public' and table_catalog='cex_dex' and table_name != 'inf
             #self.conn.close()
             return data
         except:
-            self.conn = psycopg2.connect(
-                host=DB.host,
-                database=DB.dbname,
-                user=DB.user,
-                password=DB.password,
+            # self.conn = psycopg2.connect(
+            #     host=DB.host,
+            #     database=DB.dbname,
+            #     user=DB.user,
+            #     password=DB.password,
 
-            )
-            self.cursor = self.conn.cursor(cursor_factory=DictCursor)
-            self.conn.autocommit = True
+            # )
+            # self.cursor = self.conn.cursor(cursor_factory=DictCursor)
+            # self.conn.autocommit = True
             self.cursor.execute(q)
             data = self.cursor.fetchall()
             #self.cursor.close()
