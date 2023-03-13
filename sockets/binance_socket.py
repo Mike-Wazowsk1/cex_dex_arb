@@ -66,28 +66,16 @@ symbols = seen
 
 def init_snapshot(symbol,no_wait=False):
     global CNT, base_info
-    if no_wait:
-
-        """
-        Retrieve order book
-        """
-        time.sleep(random.randint(1,10))
-        base_info[symbol.lower()] = True
-        print(f"REST request: {symbol} no_wait")
-        base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
-        msg = requests.get(base_url).json()
-        CNT += 1
-        base_info[symbol.lower()] = False
-        return msg
     if base_info.get(symbol.lower(),False) == True:
         return manager[symbol.lower()]
+    
     if base_info.get(symbol.lower(),False) == False:
         base_info[symbol.lower()] = True
         print(f"REST request: {symbol}")
         """
         Retrieve order book
         """
-        time.sleep(60)
+        time.sleep(10)
         base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000'
         msg = requests.get(base_url).json()
         CNT += 1
@@ -157,10 +145,6 @@ async def message_handler(message, path):
     try:
         if "depthUpdate" in json.dumps(message):
             last_update_id = manager[symbol.lower()]['lastUpdateId']
-            # if message['u'] < last_update_id:
-            #     print(f"Drop: {symbol}")
-
-            #     return
             if message['u'] <= last_update_id:
                 pass
             elif message['U'] <= last_update_id + 1 <= message['u']:
@@ -259,6 +243,7 @@ def reciver(client, symbol, global_dict):
     twm.start_depth_socket(callback=message_handler, symbol=symbol)
     print(f"Reciver: {symbol}")
     manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
+    time.sleep(10)
     twm.join()
 
 
