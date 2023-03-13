@@ -111,6 +111,7 @@ def handle_orderbook(message):
         
 
 def proxy(handle_orderbook, symbol):
+    ws_spot = spot.WebSocket(testnet=False)
     ws_spot.orderbook_stream(handle_orderbook, symbol)
     while True:
         time.sleep(1)
@@ -128,6 +129,7 @@ print(f"LEN: {len(symbols)}")
 for symbol in symbols:
     try:
         mp.Process(target=proxy,args=[handle_orderbook, symbol]).start()
+        time.sleep(5)
     except:
         print("can't")
         print(symbol)
