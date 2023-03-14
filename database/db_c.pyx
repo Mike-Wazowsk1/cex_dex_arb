@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 from config import config
 DB = config.DB
-print("Imported C_DB")
+print("Imported C_DB new")
 
 cdef class DataBase:
     def __init__(self):
