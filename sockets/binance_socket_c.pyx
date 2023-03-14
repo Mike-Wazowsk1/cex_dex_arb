@@ -159,7 +159,7 @@ cdef str_round(a):
         if str_a[i] != "0":
             zero_flag = 1
         if (str_a[i] == '9' and str_a[i+1] == "9") or (str_a[i] == '0' and str_a[i+1] == "0") and zero_flag == 1:
-            return np.round(a,i-1)
+            return np.round(a,i)
     return a
     
 
