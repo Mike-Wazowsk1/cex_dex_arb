@@ -7,4 +7,4 @@ setup(name = 'binance_socket_c',ext_modules=[Extension("binance_socket_c",
                                                         sources=['binance_socket_c.pyx'],
                                                         extra_compile_args=['-O3'],
                                                         )],cmdclass = {'build_ext': build_ext},
-                                                        language_level='3')
+                                                        compiler_directives={'language_level' : "3"} )
