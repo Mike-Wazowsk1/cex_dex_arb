@@ -1,4 +1,7 @@
 from distutils.core import setup
 from Cython.Build import cythonize
+from distutils.extension import Extension
 
-setup(ext_modules = cythonize('binance_socket_c.pyx',language_level=3,extra_compile_args=["/Ox"] ))
+setup(name = 'binance_socket_c',ext_modules=[Extension("binance_socket_c",
+                                                        sources=['binance_socket_c.px'],
+                                                        extra_compile_args=['/Ox'])])
