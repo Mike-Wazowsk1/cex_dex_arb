@@ -251,7 +251,7 @@ def reciver(client, current_batch, global_dict):
         counter[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
         print(f"Reciver: {symbol}")
-        time.sleep(random.randint(1,5))
+        time.sleep(random.randint(3,5))
         manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
     twm.join()
 
@@ -278,7 +278,8 @@ async def main():
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         # p.setDaemon(True)
         # p.start()
-        time.sleep(random.randint(0,5))
+        time.sleep(random.randint(1,5))
+        time.sleep(5)
 
         p.start()
 
