@@ -22,7 +22,7 @@ from database.db_c import DataBase
 
 from functools import wraps
 import random
-print("I'm new Cython with -O3 and new db from parrent")
+print("I'm new Cython with -O3 and dbC cur")
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))

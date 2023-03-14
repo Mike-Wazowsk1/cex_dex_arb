@@ -1,10 +1,9 @@
 #type: ignore
 try:
     from binance_socket_c import main
-    print("default import")
 except:
     from sockets.binance_socket_c import main
-    print("default import")
+ 
     
 
 import asyncio
