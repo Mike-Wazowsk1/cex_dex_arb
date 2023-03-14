@@ -136,11 +136,11 @@ async def message_handler(message, path):
     global order_book, manager,base_info, counter
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
-    if counter[symbol.lower()] >= 100:
-        print(f"REACH limit: {symbol}")
-        manager[symbol.lower()] = init_snapshot(symbol.upper())
-        counter[symbol.lower()] = 0
-        return 
+    # if counter[symbol.lower()] >= 100:
+    #     print(f"REACH limit: {symbol}")
+    #     manager[symbol.lower()] = init_snapshot(symbol.upper())
+    #     counter[symbol.lower()] = 0
+    #     return 
 
 
         
