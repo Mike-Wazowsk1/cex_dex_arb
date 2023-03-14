@@ -126,7 +126,6 @@ async def message_handler(message, path):
                     f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
-                print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
 
 
         asks = np.array(sorted(
@@ -199,7 +198,6 @@ cdef reciver(client, current_batch, global_dict):
         base_info[symbol.lower()] = 0
         counter[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
-        print(f"Reciver: {symbol}")
         manager[symbol.lower()] = init_snapshot(symbol)
         time.sleep(random.randint(1,10))
 
@@ -248,7 +246,7 @@ async def main():
     symbols = seen
     client = Client()
 
-    batch_size = ceil(56)
+    batch_size = ceil(42)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
