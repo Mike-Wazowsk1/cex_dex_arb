@@ -100,6 +100,7 @@ cdef process_updates(message, symbol):
 
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
+    t = time.perf_counter_ns
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
     # if counter[symbol.lower()] >= 100:
@@ -137,6 +138,7 @@ async def message_handler(message, path):
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
+        print(f"Execution time: {time.perf_counter_ns()-t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
     # except Exception as e:
