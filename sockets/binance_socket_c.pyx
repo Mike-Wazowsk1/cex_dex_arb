@@ -21,8 +21,15 @@ try:
     print("imported DB_c")
 except:
     print("from database.db_c import DataBase not working")
-    from db_c import DataBase
+    # from db_c import DataBase
     print("imported DB_c")
+try:
+    from database.db import DataBase
+    print("imported DB")
+except:
+    print("from database.db_c import DataBase not working")
+    from db import DataBase
+    print("imported DB")
 
 from functools import wraps
 import random
