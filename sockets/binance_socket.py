@@ -273,8 +273,8 @@ async def main():
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # symbol = [symbol]
-        p = th.Thread(target=reciver, args=[client, current_batch, 0])
-        p.setDaemon(True)
+        p = mp.Process(target=reciver, args=[client, current_batch, 0])
+        # p.setDaemon(True)
         # p.start()
         time.sleep(5)
         time.sleep(random.randint(0,5))
