@@ -25,6 +25,20 @@ def get_snapshot(symbol):
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
+        return result
+    return timeit_wrapper   
+
+def get_snapshot(symbol):
+    db.init_snapshot(db_name="binance", symbol=symbol.lower(
+    ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 cdef init_snapshot(symbol):
     
@@ -145,7 +159,7 @@ async def message_handler(message, path):
     #     await asyncio.sleep(10)
 
 
-
+@timeit
 cdef printer(asks, bids, symbol):
     """
     Function to process the received messages
