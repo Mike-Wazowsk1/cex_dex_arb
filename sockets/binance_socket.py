@@ -45,16 +45,16 @@ def init_snapshot(symbol,no_wait=False):
     #     return manager[symbol.lower()]
     
     # if base_info.get(symbol.lower(),False) == False:
-    base_info[symbol.lower()] = True
+    # base_info[symbol.lower()] = True
     """
     Retrieve order book
     """
     # time.sleep(random.randint(0,5))
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     msg = requests.get(base_url).json()
-    print(f"REST request: {symbol}")
+    # print(f"REST request: {symbol}")
 
-    base_info[symbol.lower()] = False
+    # base_info[symbol.lower()] = False
     return msg
 
 
@@ -171,12 +171,12 @@ def printer(asks, bids, symbol):
     count = 1
     mean_price = 0
     usdt_quantity = 0
-    # for i, val in enumerate(asks_quantity):
-    #     if usdt_quantity < user_max_amount:
-    #         quantity += val
-    #         mean_price += asks_price[i]
-    #         usdt_quantity += quantity * asks_price[i]
-    #         count += 1
+    for i, val in enumerate(asks_quantity):
+        if usdt_quantity < user_max_amount:
+            quantity += val
+            mean_price += asks_price[i]
+            usdt_quantity += quantity * asks_price[i]
+            count += 1
 
     asks_amount = quantity
     asks_avg_price = mean_price/count
@@ -188,12 +188,12 @@ def printer(asks, bids, symbol):
     count = 1
     mean_price = 0
     usdt_quantity = 0
-    # for i, val in enumerate(bids_quantity):
-    #     if usdt_quantity < user_max_amount:
-    #         quantity += val
-    #         mean_price += bids_price[i]
-    #         usdt_quantity += quantity * bids_price[i]
-    #         count += 1
+    for i, val in enumerate(bids_quantity):
+        if usdt_quantity < user_max_amount:
+            quantity += val
+            mean_price += bids_price[i]
+            usdt_quantity += quantity * bids_price[i]
+            count += 1
 
     bids_amount = quantity
     timestamp = time.time()
