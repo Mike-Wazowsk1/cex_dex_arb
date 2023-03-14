@@ -253,7 +253,7 @@ def reciver(client, current_batch, global_dict):
         print(f"Reciver: {symbol}")
         time.sleep(random.randint(1,5))
         manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
-        twm.join()
+    twm.join()
 
 
 
