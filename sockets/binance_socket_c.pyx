@@ -156,7 +156,7 @@ cdef str_round(a):
     cdef int zero_flag = 0
     cdef str_a = str(a)
     for i in range(len(str_a)-1):
-        if str[a] != "0":
+        if str_a[i] != "0":
             zero_flag = 1
         if (str_a[i] == '9' and str_a[i+1] == "9") or (str_a[i] == '0' and str_a[i+1] == "0") and zero_flag == 1:
             return np.round(a,i-1)
