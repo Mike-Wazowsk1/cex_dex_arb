@@ -16,13 +16,8 @@ import configparser
 from binance.streams import ThreadedWebsocketManager
 import requests
 import numpy as np
-try:
-    from database.db_c import DataBase
-    print("imported DB_c")
-except:
-    print("from database.db_c import DataBase not working")
-    from db_c import DataBase
-    print("imported DB_c")
+from database.db_c import DataBase
+
 
 
 from functools import wraps
@@ -180,7 +175,10 @@ cdef printer(asks, bids, symbol):
 
     cdef asks_amount = quantity
     cdef asks_avg_price = mean_price/count
-
+    quantity = 0
+    count = 0
+    mean_price = 0
+    usdt_quantity = 0
     cdef bids_price = bids[:,0].astype(np.float32)
     cdef bids_quantity = bids[:,1].astype(np.float32)
 
