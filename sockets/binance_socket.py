@@ -140,10 +140,10 @@ async def message_handler(message, path):
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
 
 
-        asks = sorted(
-            manager[symbol.lower()]['asks'], key=lambda x: float(x[0]))[:15]
-        bids = sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-            x[0]), reverse=True)[:15]
+        asks = np.array(sorted(
+            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
+        bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+            x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
         # print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
