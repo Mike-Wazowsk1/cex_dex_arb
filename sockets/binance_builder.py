@@ -5,5 +5,5 @@ from Cython.Distutils import build_ext
 
 setup(name = 'binance_socket_c',ext_modules=[Extension("binance_socket_c",
                                                         sources=['binance_socket_c.pyx'],
-                                                        )],cmdclass = {'build_ext': build_ext},
-                                                        compiler_directives={'language_level' : "3"} )
+                                                        cython_directives = {'language_level' : "3"}
+                                                        )],cmdclass = {'build_ext': build_ext},)
