@@ -241,18 +241,18 @@ def message_proxy(message, path):
 #     asyncio.run(reciver(client, current_batch, global_dict))
 
 
-def reciver(client, symbol, global_dict):
+def reciver(client, current_batch, global_dict):
     global manager,CNT,base_info, counter
     CNT = 0 
     twm = ThreadedWebsocketManager()
     twm.start()
-    # for symbol in current_batch:
-    base_info[symbol.lower()] = 0
-    counter[symbol.lower()] = 0
-    twm.start_depth_socket(callback=message_handler, symbol=symbol)
-    print(f"Reciver: {symbol}")
-    manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
-    twm.join()
+    for symbol in current_batch:
+        base_info[symbol.lower()] = 0
+        counter[symbol.lower()] = 0
+        twm.start_depth_socket(callback=message_handler, symbol=symbol)
+        print(f"Reciver: {symbol}")
+        manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
+        twm.join()
 
 
 
@@ -265,22 +265,21 @@ async def main():
 
     client = Client()
 
-    batch_size = ceil(300)
+    batch_size = ceil(10)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
 
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
-        for symbol in current_batch:
-            # symbol = [symbol]
-            p = th.Thread(target=reciver, args=[client, symbol, 0])
-            p.setDaemon(True)
-            # p.start()
-            time.sleep(5)
-            time.sleep(random.randint(0,5))
+        # symbol = [symbol]
+        p = th.Thread(target=reciver, args=[client, current_batch, 0])
+        p.setDaemon(True)
+        # p.start()
+        time.sleep(5)
+        time.sleep(random.randint(0,5))
 
-            p.start()
+        p.start()
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
