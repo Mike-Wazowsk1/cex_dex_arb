@@ -168,7 +168,7 @@ def printer(asks, bids, symbol):
     asks_quantity = asks[:,1].astype(np.float64)
     user_max_amount = float(db.get_info_col('max_amount'))
     quantity = 0
-    count = 0
+    count = 1
     mean_price = 0
     usdt_quantity = 0
     # for i, val in enumerate(asks_quantity):
@@ -185,7 +185,7 @@ def printer(asks, bids, symbol):
     bids_quantity = bids[:,1].astype(np.float64)
 
     quantity = 0
-    count = 0
+    count = 1
     mean_price = 0
     usdt_quantity = 0
     # for i, val in enumerate(bids_quantity):
