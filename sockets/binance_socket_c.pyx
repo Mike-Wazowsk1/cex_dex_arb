@@ -18,9 +18,12 @@ import requests
 import numpy as np
 try:
     from database.db_c import DataBase
+    print("imported DB_c")
 except:
     print("from database.db_c import DataBase not working")
     from db_c import DataBase
+    print("imported DB_c")
+
 from functools import wraps
 import random
 print("I'm new Cython with -O3 and new db")
