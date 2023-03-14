@@ -20,48 +20,10 @@ from database.db import DataBase
 
 import random
 
-db = DataBase()
-client = Client()
-
-
-order_book = {
-    "lastUpdateId": 0,
-    "bids": [],
-    "asks": []
-}
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
-info = client.get_exchange_info()
-symbols = [x['symbol'] for x in info['symbols']]
-symbols = [x for x in set(symbols)]
-with mp.Pool() as pool:
-    pool.map(get_snapshot, symbols)
-
-
-
-tables = db.get_all_tables()
-tables = [x[0] for x in tables]
-seen = []
-symbols_array = []
-all_symbols = []
-basic_symbols = np.array(db.get_arb_info('binance'))[:,0]
-for table in tables:
-        if table !='binance':
-            try:
-                symbols = np.array(db.get_arb_info(table))[:,0]
-                symbols_array.append(symbols)
-            except:
-                continue
-for batch in symbols_array:
-    all_symbols.extend(list(set(batch)&set(basic_symbols)))
-all_symbols = list(set(all_symbols))
-
-for symbol in all_symbols:
-    if symbol.upper() not in seen:
-        seen.append(symbol.upper())
-symbols = seen
         
 
 
@@ -255,11 +217,42 @@ cdef reciver(client, current_batch, global_dict):
 
 
 async def main():
-    global loop, manager, base_info, counter
+    global loop, manager, base_info, counter, db
     manager = {}
     base_info = {}
     counter = {}
+    db = DataBase()
+    client = Client()
 
+    info = client.get_exchange_info()
+    symbols = [x['symbol'] for x in info['symbols']]
+    symbols = [x for x in set(symbols)]
+    with mp.Pool() as pool:
+        pool.map(get_snapshot, symbols)
+
+
+
+    tables = db.get_all_tables()
+    tables = [x[0] for x in tables]
+    seen = []
+    symbols_array = []
+    all_symbols = []
+    basic_symbols = np.array(db.get_arb_info('binance'))[:,0]
+    for table in tables:
+            if table !='binance':
+                try:
+                    symbols = np.array(db.get_arb_info(table))[:,0]
+                    symbols_array.append(symbols)
+                except:
+                    continue
+    for batch in symbols_array:
+        all_symbols.extend(list(set(batch)&set(basic_symbols)))
+    all_symbols = list(set(all_symbols))
+
+    for symbol in all_symbols:
+        if symbol.upper() not in seen:
+            seen.append(symbol.upper())
+    symbols = seen
     client = Client()
 
     batch_size = ceil(10)
