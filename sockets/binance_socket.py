@@ -278,7 +278,6 @@ async def main():
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         # p.setDaemon(True)
         # p.start()
-        time.sleep(5)
         time.sleep(random.randint(0,5))
 
         p.start()
