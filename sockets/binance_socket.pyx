@@ -245,6 +245,7 @@ async def main():
             seen.append(symbol.upper())
     symbols = seen
     symbols = ["ETHUSDT","BTCUSDT","SOLUSDT"]
+    print(symbols)
     client = Client()
 
     batch_size = ceil(42)
