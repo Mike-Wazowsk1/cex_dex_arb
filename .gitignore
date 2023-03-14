@@ -10,3 +10,4 @@
 /config/__pycache__/
 /sockets/*.c
 /sockets/build/
+/sockets/binance_socket_c.cpython-310-x86_64-linux-gnu.so
