@@ -22,7 +22,7 @@ from database.db_c import DataBase
 
 from functools import wraps
 import random
-print("I'm new Cython with -O3 and dbC cur")
+print("I'm new Cython with -O3 and round numpy")
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
@@ -131,7 +131,7 @@ async def message_handler(message, path):
 
             else:
                 print(
-                    f"Out of sync, re-syncing... u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
+                    f"Out of sync, re-syncing u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
                 manager[symbol.lower()] = init_snapshot(symbol.upper())
                 last_update_id = manager[symbol.lower()]['lastUpdateId']
 
@@ -152,7 +152,14 @@ async def message_handler(message, path):
 
     #     print(f"ERROR SYMBOL: {symbol}")
     #     await asyncio.sleep(10)
-
+cdef str_round(a):
+    cdef int zero_flag = 0
+    cdef str_a = str(a)
+    for i in range(len(str_a)-1):
+        if str[a] != "0":
+            zero_flag = 1
+        if (str_a[i] == '9' and str_a[i+1] == "9") or (str_a[i] == '0' and str_a[i+1] == "0") and zero_flag == 1:
+            return np.round(a,i-1)
 
 cdef printer(asks, bids, symbol):
     """
@@ -193,8 +200,8 @@ cdef printer(asks, bids, symbol):
     cdef timestamp = time.time()
     cdef bids_avg_price = mean_price/count
 
-    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
-                    bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
+    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=str_round(asks_avg_price),
+                    bids_price=str_round(bids_avg_price), asks_amount=str_round(asks_amount), bids_amount=str_round(bids_amount), count=count, timestamp=int(timestamp))
 
 
 
