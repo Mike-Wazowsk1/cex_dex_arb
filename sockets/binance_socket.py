@@ -85,7 +85,7 @@ def init_snapshot(symbol,no_wait=False):
 
 
 
-async def manage_order_book(side, update, symbol):
+def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
@@ -123,12 +123,12 @@ async def manage_order_book(side, update, symbol):
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
-async def process_updates(message, symbol):
+def process_updates(message, symbol):
     for update in message['b']:
-        await manage_order_book('bids', update, symbol)
+        manage_order_book('bids', update, symbol)
 
     for update in message['a']:
-        await manage_order_book('asks', update, symbol)
+        manage_order_book('asks', update, symbol)
 
 
 
@@ -158,7 +158,7 @@ async def message_handler(message, path):
                 pass
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                await process_updates(message, symbol)
+                process_updates(message, symbol)
 
             else:
                 print(
@@ -172,7 +172,7 @@ async def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
-        await printer(asks, bids, symbol)
+        printer(asks, bids, symbol)
         print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
@@ -187,7 +187,7 @@ async def message_handler(message, path):
 
 
 
-async def printer(asks, bids, symbol):
+def printer(asks, bids, symbol):
     """
     Function to process the received messages
     param msg: input message
