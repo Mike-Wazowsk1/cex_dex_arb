@@ -24,16 +24,6 @@ def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
-def timeit(func):
-    @wraps(func)
-    def timeit_wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
-        return result
-    return timeit_wrapper
 
 
 cdef init_snapshot(symbol):
@@ -50,7 +40,7 @@ cdef init_snapshot(symbol):
     # time.sleep(random.randint(0,5))
     base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     msg = requests.get(base_url).json()
-    print(f"REST request: {symbol}")
+    # print(f"REST request: {symbol}")
 
     # base_info[symbol.lower()] = False
     return msg
@@ -106,7 +96,6 @@ cdef process_updates(message, symbol):
 
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
-    t = time.perf_counter_ns()
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
     # if counter[symbol.lower()] >= 100:
@@ -145,7 +134,6 @@ async def message_handler(message, path):
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
-        print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
     # except Exception as e:
@@ -260,7 +248,7 @@ async def main():
     symbols = seen
     client = Client()
 
-    batch_size = ceil(10)
+    batch_size = ceil(56)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")

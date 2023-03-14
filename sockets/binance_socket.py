@@ -31,13 +31,11 @@ def timeit(func):
         return result
     return timeit_wrapper   
 
-@timeit
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 
-@timeit
 def init_snapshot(symbol,no_wait=False):
     
     global CNT, base_info
@@ -158,7 +156,6 @@ async def message_handler(message, path):
     #     await asyncio.sleep(10)
 
 
-@timeit
 def printer(asks, bids, symbol):
     """
     Function to process the received messages
@@ -168,7 +165,7 @@ def printer(asks, bids, symbol):
     asks_quantity = asks[:,1].astype(np.float64)
     user_max_amount = float(db.get_info_col('max_amount'))
     quantity = 0
-    count = 1
+    count = 0
     mean_price = 0
     usdt_quantity = 0
     for i, val in enumerate(asks_quantity):
@@ -185,7 +182,7 @@ def printer(asks, bids, symbol):
     bids_quantity = bids[:,1].astype(np.float64)
 
     quantity = 0
-    count = 1
+    count = 0
     mean_price = 0
     usdt_quantity = 0
     for i, val in enumerate(bids_quantity):
@@ -266,7 +263,7 @@ async def main():
     symbols = seen
 
 
-    batch_size = ceil(10)
+    batch_size = ceil(56)
     bm_count = ceil(len(symbols)/batch_size)
     print(
         f"total pair: {len(symbols)} batch_size: {batch_size} bm_count: {bm_count} ")
