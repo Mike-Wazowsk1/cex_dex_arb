@@ -1,3 +1,4 @@
+#type: ignore
 import asyncio
 from itertools import count
 import json
@@ -64,9 +65,9 @@ symbols = seen
         
 
 
-def init_snapshot(symbol,no_wait=False):
+cdef init_snapshot(symbol,no_wait=False):
     
-    global CNT, base_info
+    global base_info
     # if base_info.get(symbol.lower(),False) == True:
     #     return manager[symbol.lower()]
     
@@ -85,18 +86,18 @@ def init_snapshot(symbol,no_wait=False):
 
 
 
-async def manage_order_book(side, update, symbol):
+cdef manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
     """
     price, quantity = update
     # price exists: remove or update local order
-    i = 0
-    price_found = False
+    cdef int i = 0
+    cdef int price_found = 0
     while i < len(manager[symbol.lower()][side]):
     # for i in range(0, len(manager[symbol.lower()][side])-1):
         if float(price) == float(manager[symbol.lower()][side][i][0]):
-            price_found = True
+            price_found = 1
             # quantity is 0: remove
             if float(quantity) == 0:
                 manager[symbol.lower()][side].pop(i)
@@ -109,7 +110,7 @@ async def manage_order_book(side, update, symbol):
 
     # price not found: add new order
     if float(quantity) != 0:   
-        if not price_found: 
+        if price_found == 0: 
             manager[symbol.lower()][side].insert(-1, update)
         if side == 'asks':
             # asks prices in ascendant order
@@ -123,17 +124,18 @@ async def manage_order_book(side, update, symbol):
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
-async def process_updates(message, symbol):
+cdef process_updates(message, symbol):
     for update in message['b']:
-        await manage_order_book('bids', update, symbol)
+        manage_order_book('bids', update, symbol)
 
     for update in message['a']:
-        await manage_order_book('asks', update, symbol)
+        manage_order_book('asks', update, symbol)
 
 
 
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
+    t = time.perf_counter_ns()
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
     # if counter[symbol.lower()] >= 100:
@@ -157,7 +159,7 @@ async def message_handler(message, path):
                 pass
             elif message['U'] <= last_update_id + 1 <= message['u']:
                 manager[symbol.lower()]['lastUpdateId'] = message['u']
-                await process_updates(message, symbol)
+                process_updates(message, symbol)
 
             else:
                 print(
@@ -171,7 +173,8 @@ async def message_handler(message, path):
             manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
-        await printer(asks, bids, symbol)
+        printer(asks, bids, symbol)
+        print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
     # except Exception as e:
@@ -185,7 +188,7 @@ async def message_handler(message, path):
 
 
 
-async def printer(asks, bids, symbol):
+cdef printer(asks, bids, symbol):
     """
     Function to process the received messages
     param msg: input message
@@ -230,20 +233,9 @@ async def printer(asks, bids, symbol):
 
 
 
-async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_handler, symbol=symbol)
 
-def message_proxy(message, path):
-    global loop
-    asyncio.run(message_handler(message, path))
-
-# reciver_proxy(client, current_batch, global_dict):
-#     asyncio.run(reciver(client, current_batch, global_dict))
-
-
-def reciver(client, current_batch, global_dict):
-    global manager,CNT,base_info, counter
-    CNT = 0 
+cdef reciver(client, current_batch, global_dict):
+    global manager,base_info, counter
     twm = ThreadedWebsocketManager()
     twm.start()
     for symbol in current_batch:
