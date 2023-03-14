@@ -58,7 +58,6 @@ def init_snapshot(symbol,no_wait=False):
     return msg
 
 
-@timeit
 def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
@@ -105,7 +104,6 @@ def process_updates(message, symbol):
         manage_order_book('asks', update, symbol)
 
 
-@timeit
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
     t = time.perf_counter_ns()
@@ -142,10 +140,10 @@ async def message_handler(message, path):
                 print(f"NEW: u: {message['u']} last:  {last_update_id} U: {message['U']} symbol: {symbol}")
 
 
-        asks = np.array(sorted(
-            manager[symbol.lower()]['asks'], key=lambda x: float(x[0])))[:15]
-        bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
-            x[0]), reverse=True))[:15]
+        asks = sorted(
+            manager[symbol.lower()]['asks'], key=lambda x: float(x[0]))[:15]
+        bids = sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
+            x[0]), reverse=True)[:15]
         printer(asks, bids, symbol)
         # print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
@@ -173,12 +171,12 @@ def printer(asks, bids, symbol):
     count = 0
     mean_price = 0
     usdt_quantity = 0
-    for i, val in enumerate(asks_quantity):
-        if usdt_quantity < user_max_amount:
-            quantity += val
-            mean_price += asks_price[i]
-            usdt_quantity += quantity * asks_price[i]
-            count += 1
+    # for i, val in enumerate(asks_quantity):
+    #     if usdt_quantity < user_max_amount:
+    #         quantity += val
+    #         mean_price += asks_price[i]
+    #         usdt_quantity += quantity * asks_price[i]
+    #         count += 1
 
     asks_amount = quantity
     asks_avg_price = mean_price/count
@@ -190,12 +188,12 @@ def printer(asks, bids, symbol):
     count = 0
     mean_price = 0
     usdt_quantity = 0
-    for i, val in enumerate(bids_quantity):
-        if usdt_quantity < user_max_amount:
-            quantity += val
-            mean_price += bids_price[i]
-            usdt_quantity += quantity * bids_price[i]
-            count += 1
+    # for i, val in enumerate(bids_quantity):
+    #     if usdt_quantity < user_max_amount:
+    #         quantity += val
+    #         mean_price += bids_price[i]
+    #         usdt_quantity += quantity * bids_price[i]
+    #         count += 1
 
     bids_amount = quantity
     timestamp = time.time()
