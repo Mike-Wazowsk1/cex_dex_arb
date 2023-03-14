@@ -1,3 +1,4 @@
+#type: ignore
 from cex_dex_arb.sockets.binance_socket_c import main
 import asyncio
 if __name__ == "__main__":

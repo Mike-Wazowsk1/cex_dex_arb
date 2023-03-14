@@ -102,8 +102,6 @@ async def message_handler(message, path):
     global order_book, manager,base_info, counter
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
-
-    t = time.perf_counter_ns()
     # if counter[symbol.lower()] >= 100:
     #     print(f"REACH limit: {symbol}")
     #     manager[symbol.lower()] = init_snapshot(symbol.upper())
@@ -139,7 +137,6 @@ async def message_handler(message, path):
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
-        print(f"Execution time: {time.perf_counter_ns()-t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
     # except Exception as e:
@@ -157,8 +154,8 @@ cdef printer(asks, bids, symbol):
     Function to process the received messages
     param msg: input message
     """
-    cdef asks_price = asks[:,0].astype(np.float64)
-    cdef asks_quantity = asks[:,1].astype(np.float64)
+    cdef asks_price = asks[:,0].astype(np.float16)
+    cdef asks_quantity = asks[:,1].astype(np.float16)
     cdef user_max_amount = float(db.get_info_col('max_amount'))
     cdef quantity = 0
     cdef int count = 0
@@ -174,8 +171,8 @@ cdef printer(asks, bids, symbol):
     cdef asks_amount = quantity
     cdef asks_avg_price = mean_price/count
 
-    cdef bids_price = bids[:,0].astype(np.float64)
-    cdef bids_quantity = bids[:,1].astype(np.float64)
+    cdef bids_price = bids[:,0].astype(np.float16)
+    cdef bids_quantity = bids[:,1].astype(np.float16)
 
     for i, val in enumerate(bids_quantity):
         if usdt_quantity < user_max_amount:
@@ -185,11 +182,11 @@ cdef printer(asks, bids, symbol):
             count += 1
 
     cdef bids_amount = quantity
-    timestamp = time.time()
+    cdef timestamp = time.time()
     cdef bids_avg_price = mean_price/count
 
-    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=round(asks_avg_price,10),
-                    bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
+    db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=asks_avg_price,
+                    bids_price=bids_avg_price, asks_amount=asks_amount, bids_amount=bids_amount, count=count, timestamp=int(timestamp))
 
 
 
