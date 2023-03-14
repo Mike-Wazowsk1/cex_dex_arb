@@ -19,7 +19,7 @@ import numpy as np
 from database.db import DataBase
 from functools import wraps
 import random
-print("I'm new Cython)")
+print("I'm new Cython)sdf")
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
@@ -157,8 +157,8 @@ cdef printer(asks, bids, symbol):
     Function to process the received messages
     param msg: input message
     """
-    cdef asks_price = asks[:,0].astype(np.float64)
-    cdef asks_quantity = asks[:,1].astype(np.float64)
+    cdef asks_price = asks[:,0].astype(np.float16)
+    cdef asks_quantity = asks[:,1].astype(np.float16)
     cdef user_max_amount = float(db.get_info_col('max_amount'))
     cdef quantity = 0
     cdef int count = 0
@@ -174,8 +174,8 @@ cdef printer(asks, bids, symbol):
     cdef asks_amount = quantity
     cdef asks_avg_price = mean_price/count
 
-    cdef bids_price = bids[:,0].astype(np.float64)
-    cdef bids_quantity = bids[:,1].astype(np.float64)
+    cdef bids_price = bids[:,0].astype(np.float16)
+    cdef bids_quantity = bids[:,1].astype(np.float16)
 
     for i, val in enumerate(bids_quantity):
         if usdt_quantity < user_max_amount:
