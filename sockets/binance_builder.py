@@ -4,6 +4,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 ext = [Extension("binance_socket_c",
                  sources=['binance_socket_c.pyx'],
+                 extra_compile_args=['-O3'],
                  )]
 for e in ext:
     e.cython_directives = {'language_level': "3"} #all are Python-3
