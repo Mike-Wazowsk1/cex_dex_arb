@@ -27,23 +27,23 @@ def get_snapshot(symbol):
         
 
 
-cdef init_snapshot(symbol,no_wait=False):
+cdef init_snapshot(symbol):
     
     global base_info
     # if base_info.get(symbol.lower(),False) == True:
     #     return manager[symbol.lower()]
     
     # if base_info.get(symbol.lower(),False) == False:
-    base_info[symbol.lower()] = True
+    # base_info[symbol.lower()] = True
     """
     Retrieve order book
     """
     # time.sleep(random.randint(0,5))
-    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=100'
+    base_url = f'https://api.binance.com/api/v3/depth?symbol={symbol}&limit=20'
     msg = requests.get(base_url).json()
     print(f"REST request: {symbol}")
 
-    base_info[symbol.lower()] = False
+    # base_info[symbol.lower()] = False
     return msg
 
 
@@ -82,7 +82,7 @@ cdef manage_order_book(side, update, symbol):
             manager[symbol.lower()][side] = sorted(manager[symbol.lower()][side], key=lambda x: float(
                 x[0]), reverse=True)  # bids prices in descendant order
 
-    if len(manager[symbol.lower()][side]) > 1000:
+    if len(manager[symbol.lower()][side]) > 20:
         manager[symbol.lower()][side].pop(len(manager[symbol.lower()][side])-1)
 
 
@@ -155,13 +155,13 @@ cdef printer(asks, bids, symbol):
     Function to process the received messages
     param msg: input message
     """
-    asks_price = asks[:,0].astype(np.float64)
-    asks_quantity = asks[:,1].astype(np.float64)
-    user_max_amount = float(db.get_info_col('max_amount'))
-    quantity = 0
-    count = 0
-    mean_price = 0
-    usdt_quantity = 0
+    cdef asks_price = asks[:,0].astype(np.float64)
+    cdef asks_quantity = asks[:,1].astype(np.float64)
+    cdef user_max_amount = float(db.get_info_col('max_amount'))
+    cdef quantity = 0
+    cdef int count = 0
+    cdef mean_price = 0
+    cdef usdt_quantity = 0
     for i, val in enumerate(asks_quantity):
         if usdt_quantity < user_max_amount:
             quantity += val
@@ -169,16 +169,12 @@ cdef printer(asks, bids, symbol):
             usdt_quantity += quantity * asks_price[i]
             count += 1
 
-    asks_amount = quantity
-    asks_avg_price = mean_price/count
+    cdef asks_amount = quantity
+    cdef asks_avg_price = mean_price/count
 
-    bids_price = bids[:,0].astype(np.float64)
-    bids_quantity = bids[:,1].astype(np.float64)
+    cdef bids_price = bids[:,0].astype(np.float64)
+    cdef bids_quantity = bids[:,1].astype(np.float64)
 
-    quantity = 0
-    count = 0
-    mean_price = 0
-    usdt_quantity = 0
     for i, val in enumerate(bids_quantity):
         if usdt_quantity < user_max_amount:
             quantity += val
@@ -186,9 +182,9 @@ cdef printer(asks, bids, symbol):
             usdt_quantity += quantity * bids_price[i]
             count += 1
 
-    bids_amount = quantity
+    cdef bids_amount = quantity
     timestamp = time.time()
-    bids_avg_price = mean_price/count
+    cdef bids_avg_price = mean_price/count
 
     db.update_db(db_name="binance", symbol=symbol.lower(), asks_price=round(asks_avg_price,10),
                     bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
@@ -207,7 +203,7 @@ cdef reciver(client, current_batch, global_dict):
         counter[symbol.lower()] = 0
         twm.start_depth_socket(callback=message_handler, symbol=symbol)
         print(f"Reciver: {symbol}")
-        manager[symbol.lower()] = init_snapshot(symbol,no_wait=True)
+        manager[symbol.lower()] = init_snapshot(symbol)
         time.sleep(random.randint(1,10))
 
 
