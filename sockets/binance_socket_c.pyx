@@ -22,7 +22,7 @@ try:
 except:
     print("from database.db_c import DataBase not working")
     # from db_c import DataBase
-    print("imported DB_c")
+    # print("imported DB_c")
 try:
     from database.db import DataBase
     print("imported DB")
