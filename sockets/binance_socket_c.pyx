@@ -156,8 +156,8 @@ cdef printer(asks, bids, symbol):
     Function to process the received messages
     param msg: input message
     """
-    cdef asks_price = asks[:,0].astype(np.float32)
-    cdef asks_quantity = asks[:,1].astype(np.float32)
+    cdef asks_price = asks[:,0].astype(np.float64)
+    cdef asks_quantity = asks[:,1].astype(np.float64)
     cdef user_max_amount = float(db.get_info_col('max_amount'))
     cdef quantity = 0
     cdef int count = 0
