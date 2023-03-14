@@ -101,7 +101,6 @@ cdef process_updates(message, symbol):
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
     t = time.perf_counter_ns()
-    print(t)
     symbol = path.split("@")[0]
     counter[symbol.lower()] += 1
     # if counter[symbol.lower()] >= 100:
