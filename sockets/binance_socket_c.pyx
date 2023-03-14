@@ -16,7 +16,11 @@ import configparser
 from binance.streams import ThreadedWebsocketManager
 import requests
 import numpy as np
-from database.db_c import DataBase
+try:
+    from database.db_c import DataBase
+except:
+    print("from database.db_c import DataBase not working")
+    from db_c import DataBase
 from functools import wraps
 import random
 print("I'm new Cython with -O3 and new db")
