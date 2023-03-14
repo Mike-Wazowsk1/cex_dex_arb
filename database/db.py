@@ -1,7 +1,6 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 from config import config
-from decimal import Decimal
 DB = config.DB
 
 
@@ -10,7 +9,7 @@ class DataBase:
         pass
 
     def init_snapshot(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, count, timestamp):
-        q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,count,timestamp) VALUES ('{symbol}',{Decimal(asks_price)}, {Decimal(bids_price)},{Decimal(asks_amount)},{Decimal(bids_amount)},{Decimal(count)}, {timestamp})"
+        q = f"INSERT INTO {db_name} (symbol,asks_price,bids_price, asks_amount,bids_amount,count,timestamp) VALUES ('{symbol}',{asks_price}, {bids_price},{asks_amount},{bids_amount},{count}, {timestamp})"
         try:
             self.conn = psycopg2.connect(
                 host=DB.host,
@@ -40,7 +39,7 @@ class DataBase:
             self.conn.commit()
 
     def update_db(self, db_name, symbol, asks_price, bids_price, asks_amount, bids_amount, count, timestamp):
-        q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {Decimal(bids_price)},asks_amount = {Decimal(asks_amount)},bids_amount = {Decimal(bids_amount)}, timestamp = {timestamp},count={count} WHERE symbol = '{symbol}'"
+        q = f"UPDATE {db_name} SET asks_price = {asks_price},bids_price = {bids_price},asks_amount = {asks_amount},bids_amount = {bids_amount}, timestamp = {timestamp},count={count} WHERE symbol = '{symbol}'"
         try:
             self.conn = psycopg2.connect(
                 host=DB.host,
