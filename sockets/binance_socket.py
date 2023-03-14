@@ -16,18 +16,28 @@ from binance.streams import ThreadedWebsocketManager
 import requests
 import numpy as np
 from database.db import DataBase
-
+from functools import wraps
 import random
 
 
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
+        return result
+    return timeit_wrapper   
+
+@timeit
 def get_snapshot(symbol):
     db.init_snapshot(db_name="binance", symbol=symbol.lower(
     ), asks_price=0, bids_price=0, asks_amount=0, bids_amount=0, count=0, timestamp=int(0))
 
 
-        
-
-
+@timeit
 def init_snapshot(symbol,no_wait=False):
     
     global CNT, base_info
@@ -48,7 +58,7 @@ def init_snapshot(symbol,no_wait=False):
     return msg
 
 
-
+@timeit
 def manage_order_book(side, update, symbol):
     """
     Updates local order book's bid or ask lists based on the received update ([price, quantity])
@@ -95,7 +105,7 @@ def process_updates(message, symbol):
         manage_order_book('asks', update, symbol)
 
 
-
+@timeit
 async def message_handler(message, path):
     global order_book, manager,base_info, counter
     t = time.perf_counter_ns()
@@ -137,7 +147,7 @@ async def message_handler(message, path):
         bids = np.array(sorted(manager[symbol.lower()]['bids'], key=lambda x: float(
             x[0]), reverse=True))[:15]
         printer(asks, bids, symbol)
-        print(f"Execution take: {time.perf_counter_ns() - t}")
+        # print(f"Execution take: {time.perf_counter_ns() - t}")
     except KeyError as e:
         print(f"Symbol {symbol} not handeled")
     # except Exception as e:
@@ -150,7 +160,7 @@ async def message_handler(message, path):
     #     await asyncio.sleep(10)
 
 
-
+@timeit
 def printer(asks, bids, symbol):
     """
     Function to process the received messages
@@ -195,16 +205,6 @@ def printer(asks, bids, symbol):
                     bids_price=round(bids_avg_price,10), asks_amount=round(asks_amount,10), bids_amount=round(bids_amount,10), count=count, timestamp=int(timestamp))
 
 
-
-async def writer(bm, symbol, loop):
-    bm.start_depth_socket(callback=message_handler, symbol=symbol)
-
-def message_proxy(message, path):
-    global loop
-    asyncio.run(message_handler(message, path))
-
-# reciver_proxy(client, current_batch, global_dict):
-#     asyncio.run(reciver(client, current_batch, global_dict))
 
 
 def reciver(client, current_batch, global_dict):
