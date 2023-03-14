@@ -273,6 +273,7 @@ async def main():
     for i in range(bm_count):
         current_batch = symbols[i*batch_size:batch_size*i+batch_size]
         # symbol = [symbol]
+        print(f"Current: {current_batch[:2]}")
         p = mp.Process(target=reciver, args=[client, current_batch, 0])
         # p.setDaemon(True)
         # p.start()
