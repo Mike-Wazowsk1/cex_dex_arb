@@ -244,8 +244,8 @@ async def main():
         if symbol.upper() not in seen:
             seen.append(symbol.upper())
     symbols = seen
-    symbols = ["ETHUSDT","BTCUSDT","SOLUSDT"]
-    print(symbols)
+    # symbols = ["ETHUSDT","BTCUSDT","SOLUSDT"]
+    # print(symbols)
     client = Client()
 
     batch_size = ceil(42)
